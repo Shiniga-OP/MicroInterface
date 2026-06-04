@@ -1,0 +1,45 @@
+# saidas de compilação do android
+/gdx-android/bin/
+/gdx-android/build/
+/gdx-android/gen/
+
+# saidas de compilação do jogo
+/gdx-jogo/bin/
+/gdx-jogo/build/
+
+# saidas de compilação do pc
+/gdx-pc/bin/
+/gdx-pc/build/
+/gdx-pc/gen/
+/gdx-pc/libs/
+
+# outras saidas de compilação
+/build/
+/bin/
+/gen/
+/output/
+
+# pastas tmp
+/biblis-obrigatorias/
+/compilar-manual/
+
+# ignore o cache do gradle
+.gradle
+
+# ignore a saida de compilação do gradle
+build
+
+local.properties
+
+# ignore .cache
+.cache
+
+# ignore aplicativos tmp
+*.apk
+*.jar
+
+# ignore .settings
+.settings/
+gdx-android/.settings/
+gdx-jogo/.settings/
+gdx-pc/.settings/

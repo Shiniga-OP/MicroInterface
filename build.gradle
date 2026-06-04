@@ -1,0 +1,27 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    } 
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven { url "https://jitpack.io" }
+    }
+}
+
+task limpar(type: Delete) {
+    delete rootProject.buildDir
+}
+
+file('local.properties').text = "sdk.dir=${System.getProperty('user.home')}/android-sdk\n"
+file('gradle.properties').text = "org.gradle.configuration-cache=false\norg.gradle.caching=false\nandroid.aapt2FromMavenOverride=${['which', 'aapt2'].execute().text.trim()}\n"

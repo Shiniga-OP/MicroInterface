@@ -1,0 +1,4 @@
+rootProject.name = 'MicroInterface'
+include ':gdx-android'
+include ':gdx-pc'
+include ':gdx-jogo'

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.microinterface" android:versionCode="1" android:versionName="0.0.1">
     <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="28"/>
-    <application android:icon="@drawable/micro" android:roundIcon="@drawable/micro" android:label="@string/app_nome" android:screenOrientation="landscape" android:largeHeap="true" android:name=".Crash" android:allowAudioPlaybackCapture="true">
+    <application android:icon="@mipmap/icone" android:roundIcon="@mipmap/icone" android:label="@string/app_nome" android:screenOrientation="landscape" android:largeHeap="true" android:name=".Crash" android:allowAudioPlaybackCapture="true">
         <activity android:name=".InicioActivity" android:label="@string/app_nome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

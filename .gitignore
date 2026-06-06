@@ -37,6 +37,7 @@ local.properties
 # ignore aplicativos tmp
 *.apk
 *.jar
+*.html
 
 # ignore .settings
 .settings/

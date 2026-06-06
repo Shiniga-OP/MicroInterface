@@ -137,6 +137,7 @@ public class TelaMenu implements Screen, InputProcessor {
         fonte.dispose();
         texturaUi.dispose();
         pixelBranco.dispose();
+		ui.liberar();
     }
 
 	@Override
@@ -148,25 +149,7 @@ public class TelaMenu implements Screen, InputProcessor {
 	public boolean keyTyped(char caractere) {
 		return ui.processarCaractere(caractere);
 	}
-
-	@Override
-	public boolean keyUp(int p) {
-
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int p, int p1) {
-
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(float p, float p1) {
-
-		return false;
-	}
-
+	
 	@Override
 	public boolean touchDown(int telaX, int telaY, int p, int b) {
 		float uiY = Gdx.graphics.getHeight() - telaY;
@@ -188,5 +171,7 @@ public class TelaMenu implements Screen, InputProcessor {
     @Override public void hide() {}
     @Override public void pause() {}
     @Override public void resume() {}
+	@Override public boolean keyUp(int p) { return false; }
+	@Override public boolean mouseMoved(int telaX, int telaY) { return false; }
+	@Override public boolean scrolled(float telaX, float telaY) { return false; }
 }
-

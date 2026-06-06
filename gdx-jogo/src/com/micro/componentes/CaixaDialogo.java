@@ -13,21 +13,20 @@ import com.micro.util.Ancora;
 import com.micro.util.GerenciadorUI;
 
 public class CaixaDialogo extends Componente {
-    public PainelFatiado visual;
-    public BitmapFont fonte;
     public float escala;
     public String titulo;
     public String msg;
     public boolean ativa = false;
-    public ShapeRenderer pincelFormas;
+    public final ShapeRenderer pincelFormas;
+	public final PainelFatiado visual;
+    public final BitmapFont fonte;
+    public final Painel painelTitulo;
+    public final Rotulo rotuloTitulo;
+    public final Rotulo rotulomsg;
+    public final Painel painelBotoes;
+    public final List<Componente> componentes = new ArrayList<Componente>();
 
-    public Painel painelTitulo;
-    public Rotulo rotuloTitulo;
-    public RotuloMultilinha rotulomsg;
-    public Painel painelBotoes;
-    public List<Componente> componentes = new ArrayList<Componente>();
-
-    public Botao botaoFechar;
+    public final Botao botaoFechar;
 
     public GerenciadorUI gerenciador = null;
 
@@ -53,7 +52,7 @@ public class CaixaDialogo extends Componente {
         this.painelTitulo.addAncorado(rotuloTitulo, Ancora.CENTRO, 0, 0);
 
         // texto da mensagem
-        this.rotulomsg = new RotuloMultilinha("Mensagem padrão do sistema ui.", fonte, escala);
+        this.rotulomsg = new Rotulo("Mensagem padrão do sistema ui.", fonte, escala);
         this.rotulomsg.x = 20;
         this.rotulomsg.y = 80;
         this.rotulomsg.largura = largura - 40;
@@ -63,7 +62,7 @@ public class CaixaDialogo extends Componente {
         this.painelBotoes = new Painel(20, 15, largura - 40, 50);
 
         // botão Fechar(X) no topo direito usando o novo construtor do Botao
-        float tamFechar = 35f;
+        final float tamFechar = 35f;
         this.botaoFechar = new Botao(
             largura - tamFechar - 10, 
             altura - tamFechar - 8, 
@@ -77,7 +76,7 @@ public class CaixaDialogo extends Componente {
                 @Override
                 public void exec() {
                     ativa = false;
-                    if (aoFechar != null) aoFechar.aoFechar(false);
+                    if(aoFechar != null) aoFechar.aoFechar(false);
                 }
             }
         );
@@ -87,18 +86,18 @@ public class CaixaDialogo extends Componente {
         this.titulo = titulo;
         this.msg = msg;
         this.aoFechar = evento;
-        this.rotuloTitulo.texto = titulo;
-        this.rotulomsg.texto = msg;
+        this.rotuloTitulo.defTexto(titulo);
+        this.rotulomsg.defTexto(msg);
         this.ativa = true;
 
         // limpa os botões antigos e recria o botão de confirmação padrão
         componentes.clear();
         painelBotoes.filhos.clear();
 
-        float largBt = 120;
-        float altBt = 40;
+        final float largBt = 120;
+        final float altBt = 40;
 
-        Botao btOk = new Botao(
+        final Botao btOk = new Botao(
             (painelBotoes.largura - largBt) / 2, 
             (painelBotoes.altura - altBt) / 2, 
             largBt, 
@@ -127,8 +126,8 @@ public class CaixaDialogo extends Componente {
     public boolean aoTocar(float toqueX, float toqueY, boolean pressionado) {
         if(!ativa) return false;
 
-        float relX = toqueX - x;
-        float relY = toqueY - y;
+        final float relX = toqueX - x;
+        final float relY = toqueY - y;
 
         if(botaoFechar.aoTocar(relX, relY, pressionado)) return true;
         if(painelBotoes.aoTocar(relX, relY, pressionado)) return true;
@@ -159,8 +158,8 @@ public class CaixaDialogo extends Componente {
     public void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY) {
         if(!ativa) return;
 
-        float desenharX = paiX + x;
-        float desenharY = paiY + y;
+        final float desenharX = paiX + x;
+        final float desenharY = paiY + y;
 
         // desenha o fundo escurecido atras da caixa
         pincel.end();
@@ -175,7 +174,7 @@ public class CaixaDialogo extends Componente {
         // desenha a estrutura da caixa
         visual.desenhar(pincel, desenharX, desenharY, largura, altura, escala);
         painelTitulo.desenhar(pincel, delta, desenharX, desenharY);
-        botaoFechar.desenhar(pincel, delta, desenharX, 0); // o Y do botão ja é absoluto em relação a caixa
+        botaoFechar.desenhar(pincel, delta, desenharX, desenharY);
         rotulomsg.desenhar(pincel, delta, desenharX, desenharY);
         painelBotoes.desenhar(pincel, delta, desenharX, desenharY);
     }

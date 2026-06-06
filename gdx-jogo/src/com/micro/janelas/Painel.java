@@ -33,10 +33,10 @@ public class Painel extends Componente {
     public Color corBarraArrastando = new Color(0.8f, 0.8f, 0.8f, 1f);
     public Color corFundoBarra = new Color(0.2f, 0.2f, 0.2f, 0.5f);
 
-    private boolean arrastandoBarra = false;
-    private float toqueInicialY = 0;
-    private float deslocamentoInicialY = 0;
-    private Texture pixelBranco; // passado se o painel for rolavel para desenhar a barra
+    public boolean arrastandoBarra = false;
+    public float toqueInicialY = 0;
+    public float deslocamentoInicialY = 0;
+    public Texture pixelBranco; // passado se o painel for rolavel para desenhar a barra
 
     // construtor 1: painel classico/janela(Com bordas texturizadas)
     public Painel(PainelFatiado visual, float x, float y, float largura, float altura, float escala) {
@@ -60,13 +60,15 @@ public class Painel extends Componente {
     }
 
     public void defEspaco(float todos) {
-        this.espacoEsquerda = todos; this.espacoDireita = todos;
-        this.espacoSuperior = todos; this.espacoInferior = todos;
+        this.espacoEsquerda = todos;
+		this.espacoDireita = todos;
+        this.espacoSuperior = todos;
+		this.espacoInferior = todos;
     }
 
     public void addAncorado(Componente filho, Ancora ancoragem, float margemX, float margemY) {
-        float larguraDisponivel = largura - espacoEsquerda - espacoDireita;
-        float alturaDisponivel = altura - espacoSuperior - espacoInferior;
+        final float larguraDisponivel = largura - espacoEsquerda - espacoDireita;
+        final float alturaDisponivel = altura - espacoSuperior - espacoInferior;
 
         filho.x = ancoragem.calcularX(larguraDisponivel, filho.largura, margemX) + espacoEsquerda;
         filho.y = ancoragem.calcularY(alturaDisponivel, filho.altura, margemY) + espacoInferior;
@@ -78,13 +80,13 @@ public class Painel extends Componente {
     public void calcularAlturaConteudo() {
         float maxY = 0;
         for(Componente filho : filhos) {
-            float topoFilho = filho.y + filho.altura;
+            final float topoFilho = filho.y + filho.altura;
             if(topoFilho > maxY) maxY = topoFilho;
         }
         this.alturaConteudo = maxY + espacoSuperior + espacoInferior;
     }
 
-    private boolean precisaRolagem() {
+    public boolean precisaRolagem() {
         return rolavel && (alturaConteudo > altura);
     }
 
@@ -94,12 +96,12 @@ public class Painel extends Componente {
             filhoCapturado = null;
             arrastandoBarra = false;
         }
-        float relX = toqueX - x;
-        float relY = toqueY - y;
+        final float relX = toqueX - x;
+        final float relY = toqueY - y;
 
         // logica de interação com a barra de rolagem
         if(precisaRolagem() && mostrarBarra) {
-            float xBarra = largura - larguraBarra - margemBarra;
+            final float xBarra = largura - larguraBarra - margemBarra;
             if(relX >= xBarra && relX <= xBarra + larguraBarra && relY >= 0 && relY <= altura) {
                 if(pressionado) {
                     arrastandoBarra = true;
@@ -111,25 +113,24 @@ public class Painel extends Componente {
         }
         // se estiver arrastando a barra, calcula o rolamento
         if(arrastandoBarra && pressionado) {
-            float deltaToqueY = toqueY - toqueInicialY;
-            float alturaAreaBarra = altura - margemBarra * 2;
-            float alturaArrasto = (altura / alturaConteudo) * alturaAreaBarra;
-            float espacoDisponivelBarra = alturaAreaBarra - alturaArrasto;
+            final float deltaToqueY = toqueY - toqueInicialY;
+            final float alturaAreaBarra = altura - margemBarra * 2;
+            final float alturaArrasto = (altura / alturaConteudo) * alturaAreaBarra;
+            final float espacoDisponivelBarra = alturaAreaBarra - alturaArrasto;
 
             if(espacoDisponivelBarra > 0) {
-                float porcentagem = deltaToqueY / espacoDisponivelBarra;
-                float maxDeslocamento = alturaConteudo - altura;
-                deslocamentoY = deslocamentoInicialY - (porcentagem * maxDeslocamento);
+                final float porcentagem = deltaToqueY / espacoDisponivelBarra;
+                final float maxDeslocamento = alturaConteudo - altura;
+                deslocamentoY = deslocamentoInicialY + (porcentagem * maxDeslocamento);
                 if(deslocamentoY < 0) deslocamentoY = 0;
                 if(deslocamentoY > maxDeslocamento) deslocamentoY = maxDeslocamento;
             }
             return true;
         }
-
         // repassa o toque para os filhos(aplicando o pos de rolagem se necessario)
-        float ajusteY = rolavel ? deslocamentoY : 0;
+        final float ajusteY = rolavel ? deslocamentoY : 0;
         for(int i = filhos.size() - 1; i >= 0; i--) {
-            Componente filho = filhos.get(i);
+            final Componente filho = filhos.get(i);
             if(filho.aoTocar(relX, relY + ajusteY, pressionado)) {
                 if(pressionado) filhoCapturado = filho;
                 return true;
@@ -145,24 +146,24 @@ public class Painel extends Componente {
 
     @Override
     public void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY) {
-        float desenharX = paiX + x;
-        float desenharY = paiY + y;
+        final float desenharX = paiX + x;
+        final float desenharY = paiY + y;
 
         // 1. desenha o fundo/janela se houver
         if(temFundo && visual != null) {
-            Color corOriginal = pincel.getColor();
+            final Color corOriginal = pincel.getColor();
             pincel.setColor(corFundo);
             visual.desenhar(pincel, desenharX, desenharY, largura, altura, escala);
             pincel.setColor(corOriginal);
         }
-        // 2. renderiza Filhos(com ou sem recorte de rolagem)
+        // 2. renderiza filhos(com ou sem recorte de rolagem)
         if(precisaRolagem()) {
             pincel.flush();
             // seu calculo matematico customizado nativo do glScissor:
-            float sX = desenharX;
-            float sY = desenharY;
-            float sLargura = largura;
-            float sAltura = altura;
+            final float sX = desenharX;
+            final float sY = desenharY;
+            final float sLargura = largura;
+            final float sAltura = altura;
 
             // transforma coordenadas para a tela
             Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
@@ -176,16 +177,16 @@ public class Painel extends Componente {
 
             // 3. desenha a barra de rolagem por cima
             if(mostrarBarra && pixelBranco != null) {
-                float xBarra = desenharX + largura - larguraBarra - margemBarra;
-                float yBarra = desenharY + margemBarra;
-                float alturaAreaBarra = altura - margemBarra * 2;
+                final float xBarra = desenharX + largura - larguraBarra - margemBarra;
+                final float yBarra = desenharY + margemBarra;
+                final float alturaAreaBarra = altura - margemBarra * 2;
 
                 pincel.setColor(corFundoBarra);
                 pincel.draw(pixelBranco, xBarra, yBarra, larguraBarra, alturaAreaBarra);
 
-                float alturaArrasto = (altura / alturaConteudo) * alturaAreaBarra;
-                float maxDeslocamento = alturaConteudo - altura;
-                float barraY = yBarra + (alturaAreaBarra - alturaArrasto) * (1 - (deslocamentoY / maxDeslocamento));
+                final float alturaArrasto = (altura / alturaConteudo) * alturaAreaBarra;
+                final float maxDeslocamento = alturaConteudo - altura;
+                final float barraY = yBarra + (alturaAreaBarra - alturaArrasto) * (deslocamentoY / maxDeslocamento);
 
                 pincel.setColor(arrastandoBarra ? corBarraArrastando : corBarra);
                 pincel.draw(pixelBranco, xBarra, barraY, larguraBarra, alturaArrasto);

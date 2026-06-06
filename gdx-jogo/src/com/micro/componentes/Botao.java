@@ -49,6 +49,16 @@ public class Botao extends Componente {
         this.rotulo.altura = this.altura;
     }
 
+    public void defTam(float largura, float altura) {
+        this.largura = largura;
+        this.altura = altura;
+        if(rotulo != null) {
+            rotulo.largura = largura;
+            rotulo.altura = altura;
+            rotulo.quebrarTexto();
+        }
+    }
+
     // transforma este botão em um seleção/radio
     public Botao tornarAlternavel(boolean estadoInicial) {
         this.alternavel = true;
@@ -86,8 +96,8 @@ public class Botao extends Componente {
 
     @Override
     public void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY) {
-        float desenharX = paiX + x;
-        float desenharY = paiY + y;
+        final float desenharX = paiX + x;
+        final float desenharY = paiY + y;
 
         // 1. renderização do Fundo
         if(visualFatiado != null) {
@@ -112,11 +122,10 @@ public class Botao extends Componente {
             pincel.draw(pixelBranco, desenharX, desenharY, 1, altura); // Esquerda
             pincel.draw(pixelBranco, desenharX + largura - 1, desenharY, 1, altura); // Direita
         }
-
         // 2. se for um botão de seleção/alternavel, desenha o indicador geometrico
         if(alternavel && pixelBranco != null) {
-            float circX = desenharX + 10;
-            float circY = desenharY + (altura / 2f) - 6;
+            final float circX = desenharX + 10;
+            final float circY = desenharY + (altura / 2f) - 6;
 
             // caixa externa do indicador
             pincel.setColor(Color.LIGHT_GRAY);

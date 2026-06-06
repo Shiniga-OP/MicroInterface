@@ -6,12 +6,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.Array;
 
 public class Rotulo extends Componente {
-    private String texto;
+    public String texto;
+	public float escala;
 	public float espacoLinha = 1.3f;
 	public float alturaLinha;
     public final BitmapFont fonte;
     public final GlyphLayout medidor;
-    public final float escala;
     public final Array<String> linhas;
 
     public Rotulo(String texto, BitmapFont fonte, float escala) {
@@ -26,6 +26,11 @@ public class Rotulo extends Componente {
 
 	public void defTexto(String texto) {
 		this.texto = texto;
+		quebrarTexto();
+	}
+	
+	public void defEscala(float escala) {
+		this.escala = escala;
 		quebrarTexto();
 	}
 
@@ -66,8 +71,8 @@ public class Rotulo extends Componente {
     public void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY) {
         if(largura <= 0 || altura <= 0) return; // se não tem tamanho, não desenha pra não bugar
 
-        float escalaOriginalX = fonte.getData().scaleX;
-        float escalaOriginalY = fonte.getData().scaleY;
+        final float escalaOriginalX = fonte.getData().scaleX;
+        final float escalaOriginalY = fonte.getData().scaleY;
 
         // 1. reinicia a escala pra medir o tamanho "real/bruto" da fonte no arquivo
         fonte.getData().setScale(1.0f);
@@ -84,10 +89,10 @@ public class Rotulo extends Componente {
         float alturaBloco = alturaUmaLinha * espacoLinha * (linhas.size - 1) + alturaUmaLinha;
 
         // 2. calculo da escala necessaria(regra de 3)
-        // texto ocupe no máximo 80% da largura/altura do componente pra não colar nas bordas
-        float margem = 0.8f;
-        float escalaX = (largura * margem) / larguraBloco;
-        float escalaY = (altura * margem) / alturaBloco;
+        // texto ocupe no maximo 80% da largura/altura do componente pra não colar nas bordas
+        final float margem = 0.8f;
+        final float escalaX = (largura * margem) / larguraBloco;
+        final float escalaY = (altura * margem) / alturaBloco;
 
         // usa a menor escala para o texto não ficar deformado(esticado)
         float escalaFinal = Math.min(escalaX, escalaY);
@@ -111,8 +116,8 @@ public class Rotulo extends Componente {
 
         for(int i = 0; i < linhas.size; i++) {
             medidor.setText(fonte, linhas.get(i));
-            float posX = paiX + x + (largura / 2) - (medidor.width / 2);
-            float posY = blocoTopoY - (alturaUmaLinha * espacoLinha * i);
+            final float posX = paiX + x + (largura / 2) - (medidor.width / 2);
+            final float posY = blocoTopoY - (alturaUmaLinha * espacoLinha * i);
             fonte.draw(pincel, linhas.get(i), posX, posY);
         }
         // 5. restaura a escala que estava antes

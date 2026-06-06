@@ -12,6 +12,7 @@ import com.micro.componentes.Botao;
 import com.micro.componentes.CaixaDialogo;
 import com.micro.componentes.CampoTexto;
 import com.micro.componentes.Rotulo;
+import com.micro.janelas.Lista;
 import com.micro.janelas.Painel;
 import com.micro.janelas.PainelFatiado;
 import com.micro.util.Acao;
@@ -34,6 +35,7 @@ public class TelaMenu implements Screen, InputProcessor {
     public PainelFatiado visualFatiado;
     public Painel painelPrincipal;
     public CaixaDialogo caixaDialogo;
+    public Lista lista;
 
     @Override
     public void show() {
@@ -104,8 +106,29 @@ public class TelaMenu implements Screen, InputProcessor {
         caixaDialogo.x = (Gdx.graphics.getWidth() - caixaDialogo.largura) / 2f;
         caixaDialogo.y = (Gdx.graphics.getHeight() - caixaDialogo.altura) / 2f;
 
+        // teste da Lista: painel rolavel com varios itens
+        float largLista = 200;
+        float altLista = 180;
+        lista = new Lista(
+            (Gdx.graphics.getWidth() - largPainel) / 2f - largLista - 20,
+            (Gdx.graphics.getHeight() - altLista) / 2f,
+            largLista, altLista, pixelBranco
+        );
+        lista.alturaItem = 44f;
+        lista.espacoItem = 6f;
+        String[] opcoes = { "Novo Jogo", "Continuar", "Opcoes", "Creditos", "Sair" };
+        for(int i = 0; i < opcoes.length; i++) {
+            final String nome = opcoes[i];
+            lista.addItem(new Botao(0, 0, 0, 0, nome, fonte, 1.0f, pixelBranco,
+							  new Acao() {
+								  @Override public void exec() { Gdx.app.log("Lista", "Clicou: " + nome); }
+							  }
+						  ));
+        }
+
 		ui = new GerenciadorUI();
 		ui.add(painelPrincipal);
+		ui.add(lista);
 		ui.add(caixaDialogo);
 
         Gdx.input.setInputProcessor(this);
@@ -149,7 +172,7 @@ public class TelaMenu implements Screen, InputProcessor {
 	public boolean keyTyped(char caractere) {
 		return ui.processarCaractere(caractere);
 	}
-	
+
 	@Override
 	public boolean touchDown(int telaX, int telaY, int p, int b) {
 		float uiY = Gdx.graphics.getHeight() - telaY;

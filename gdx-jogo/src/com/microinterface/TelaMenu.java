@@ -21,6 +21,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
 import com.micro.util.GerenciadorUI;
+import com.micro.Versao;
 
 public class TelaMenu implements Screen, InputProcessor {
     public SpriteBatch pincel;
@@ -36,6 +37,8 @@ public class TelaMenu implements Screen, InputProcessor {
     public Painel painelPrincipal;
     public CaixaDialogo caixaDialogo;
     public Lista lista;
+    public Painel painelTeste;
+    public boolean painelTesteVisivel = false;
 
     @Override
     public void show() {
@@ -56,18 +59,18 @@ public class TelaMenu implements Screen, InputProcessor {
 
         painelPrincipal = new Painel(visualFatiado, painelX, painelY, largPainel, altPainel, 2.0f);
 
-        Rotulo titulo = new Rotulo("MENU DE TESTES DA UI", fonte, 1.5f);
+        Rotulo titulo = new Rotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), fonte, 2.0f);
         titulo.x = (largPainel - 200) / 2f;
         titulo.y = altPainel - 50;
         titulo.largura = 200;
-        titulo.altura = 30;
+        titulo.altura = 50;
         painelPrincipal.add(titulo);
 
-        CampoTexto campo = new CampoTexto(visualFatiado, fonte, 50, altPainel - 120, largPainel - 100, 40, 1.0f);
+        CampoTexto campo = new CampoTexto(visualFatiado, fonte, 50, altPainel - 120, largPainel - 100, 40, 2.0f);
         campo.padrao = "Digite seu nome aqui...";
         painelPrincipal.add(campo);
 
-        Painel configVolume = FabricaUtil.criarConfigNum(50, altPainel - 190, largPainel - 100, 40, "Volume do Som:", "7", fonte, 1.0f, visualFatiado, 
+        Painel configVolume = FabricaUtil.criarConfigNum(50, altPainel - 190, largPainel - 100, 40, "Volume do Som:", "7", fonte, 2.0f, visualFatiado, 
             new Acao() {
                 @Override public void exec() { Gdx.app.log("UI", "Volume diminuido"); }
             }, 
@@ -77,14 +80,14 @@ public class TelaMenu implements Screen, InputProcessor {
         );
         painelPrincipal.add(configVolume);
 
-        Botao caixaSelecaoMusica = FabricaUtil.criarSelecao(50, altPainel - 250, largPainel - 100, 40, "Ativar Musicas de Fundo", fonte, 1.0f, pixelBranco, true, 
+        Botao caixaSelecaoMusica = FabricaUtil.criarSelecao(50, altPainel - 250, largPainel - 100, 40, "Ativar Musicas de Fundo", fonte, 2.0f, pixelBranco, true, 
             new Acao() {
                 @Override public void exec() { Gdx.app.log("UI", "Alternou estado da musica"); }
             }
         );
         painelPrincipal.add(caixaSelecaoMusica);
 
-        Botao btAviso = new Botao(50, 40, largPainel - 100, 45, "ABRIR CAIXA DE DIALOGO", fonte, 1.0f, visualFatiado, 
+        Botao btAviso = new Botao(50, 40, largPainel - 100, 45, "ABRIR CAIXA DE DIALOGO", fonte, 2.0f, visualFatiado, 
             new Acao() {
                 @Override
                 public void exec() {
@@ -101,8 +104,20 @@ public class TelaMenu implements Screen, InputProcessor {
         );
         painelPrincipal.add(btAviso);
 
+        Botao btTeste = new Botao(50, 90, largPainel - 100, 45, "TESTE: PAINEL ANINHADO", fonte, 2.0f, visualFatiado,
+            new Acao() {
+                @Override
+                public void exec() {
+                    painelTesteVisivel = !painelTesteVisivel;
+                    if(painelTesteVisivel) ui.addCamada(painelTeste, GerenciadorUI.CAMADA_TOPO);
+                    else ui.rm(painelTeste);
+                }
+            }
+        );
+        painelPrincipal.add(btTeste);
+
         // caixa de dialogo configurada com a escala padrão interna 1.0f
-        caixaDialogo = new CaixaDialogo(visualFatiado, fonte, 1.0f, pincelFormas);
+        caixaDialogo = new CaixaDialogo(visualFatiado, fonte, 2.0f, pincelFormas);
         caixaDialogo.x = (Gdx.graphics.getWidth() - caixaDialogo.largura) / 2f;
         caixaDialogo.y = (Gdx.graphics.getHeight() - caixaDialogo.altura) / 2f;
 
@@ -119,12 +134,45 @@ public class TelaMenu implements Screen, InputProcessor {
         String[] opcoes = { "Novo Jogo", "Continuar", "Opcoes", "Creditos", "Sair" };
         for(int i = 0; i < opcoes.length; i++) {
             final String nome = opcoes[i];
-            lista.addItem(new Botao(0, 0, 0, 0, nome, fonte, 1.0f, pixelBranco,
+            lista.addItem(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
 							  new Acao() {
 								  @Override public void exec() { Gdx.app.log("Lista", "Clicou: " + nome); }
 							  }
 						  ));
         }
+        // painel de teste: painel externo contendo um painel rolavel aninhado
+        // serve para validar a correcao de coordenadas no arraste
+        float largTeste = 320;
+        float altTeste = 300;
+        painelTeste = new Painel(visualFatiado,
+								 (Gdx.graphics.getWidth() - largTeste) / 2f,
+								 (Gdx.graphics.getHeight() - altTeste) / 2f,
+								 largTeste, altTeste, 2.0f);
+
+        Rotulo rotuloTeste = new Rotulo("Painel aninhado rolavel:", fonte, 2.0f);
+        rotuloTeste.x = 10;
+        rotuloTeste.y = altTeste - 40;
+        rotuloTeste.largura = largTeste - 20;
+        rotuloTeste.altura = 30;
+        painelTeste.add(rotuloTeste);
+
+        // lista rolavel aninhada, deslocada para nao estar na origem (0,0)
+        float largInterno = largTeste - 40;
+        float altInterno = 160;
+        Lista listaInterna = new Lista(20, 30, largInterno, altInterno, pixelBranco);
+        listaInterna.alturaItem = 38f;
+        listaInterna.espacoItem = 4f;
+
+        String[] itens = { "Item A", "Item B", "Item C", "Item D", "Item E", "Item F", "Item G" };
+        for(int i = 0; i < itens.length; i++) {
+            final String nome = itens[i];
+            listaInterna.addItem(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
+									 new Acao() {
+										 @Override public void exec() { Gdx.app.log("Teste", "Clicou: " + nome); }
+									 }
+								 ));
+        }
+        painelTeste.add(listaInterna);
 
 		ui = new GerenciadorUI();
 		ui.add(painelPrincipal);
@@ -144,14 +192,7 @@ public class TelaMenu implements Screen, InputProcessor {
         pincel.end();
     }
 
-    @Override
-    public void resize(int largura, int altura) {
-        painelPrincipal.x = (largura - painelPrincipal.largura) / 2f;
-        painelPrincipal.y = (altura - painelPrincipal.altura) / 2f;
-
-        caixaDialogo.x = (largura - caixaDialogo.largura) / 2f;
-        caixaDialogo.y = (altura - caixaDialogo.altura) / 2f;
-    }
+    @Override public void resize(int largura, int altura) {}
 
     @Override
     public void dispose() {

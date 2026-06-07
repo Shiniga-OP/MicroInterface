@@ -71,12 +71,12 @@ public class GerenciadorUI {
 		}
 		// verifica se o componente tem filhos
 		if(componente instanceof Painel) {
-			Painel painel = (Painel)componente;
+			final Painel painel = (Painel)componente;
 			for(Componente filho : painel.filhos) {
 				registrarCamposTexto(filho);
 			}
 		} else if(componente instanceof CaixaDialogo) {
-			CaixaDialogo dialogo = (CaixaDialogo) componente;
+			final CaixaDialogo dialogo = (CaixaDialogo) componente;
 			for(Componente filho : dialogo.componentes) {
 				registrarCamposTexto(filho);
 			}
@@ -102,15 +102,14 @@ public class GerenciadorUI {
 	public boolean processarToque(float x, float y, boolean pressionado) {
 		// primeiro verifica dialogos(sempre no topo)
 		for(int i = dialogos.size() - 1; i >= 0; i--) {
-			CaixaDialogo d = dialogos.get(i);
+			final CaixaDialogo d = dialogos.get(i);
 			if(d.ativa && d.aoTocar(x, y, pressionado)) return true;
 		}
-
 		// se ta soltando o toque(pressionado = false)
 		if(!pressionado) {
 			// se tem um componente capturado, envia o evento so pra ele
 			if(componenteCapturado != null) {
-				boolean resultado = componenteCapturado.aoTocar(x, y, false);
+				final boolean resultado = componenteCapturado.aoTocar(x, y, false);
 				componenteCapturado = null;
 				return resultado;
 			}
@@ -119,8 +118,8 @@ public class GerenciadorUI {
 		// processamento normal, processa camadas de cima para baixo
 		ArrayList<Integer> numsCamadas = new ArrayList<Integer>(camadas.keySet());
 		for(int camadaIdc = numsCamadas.size() - 1; camadaIdc >= 0; camadaIdc--) {
-			int numCamada = numsCamadas.get(camadaIdc);
-			ArrayList<Componente> componentesCamada = camadas.get(numCamada);
+			final int numCamada = numsCamadas.get(camadaIdc);
+			final ArrayList<Componente> componentesCamada = camadas.get(numCamada);
 
 			// dentro da camada, processa de tras pra frente
 			for(int i = componentesCamada.size() - 1; i >= 0; i--) {
@@ -142,14 +141,21 @@ public class GerenciadorUI {
 	public void processarArraste(float x, float y) {
 		// primeiro processa dialogos
 		for(int i = dialogos.size() - 1; i >= 0; i--) {
-			CaixaDialogo dialogo = dialogos.get(i);
+			final CaixaDialogo dialogo = dialogos.get(i);
 			if(dialogo.ativa) {
 				dialogo.aoArrastar(x, y);
 			}
 		}
-		// se tem um componente capturado que precisa de arraste, envia o evento
+		// se tem um componente capturado que precisa de arraste, converte global->local e envia
 		if(componenteCapturado != null) {
-			componenteCapturado.aoTocar(x, y, true);
+			float localX = x;
+			float localY = y;
+			if(componenteCapturado instanceof Painel) {
+				Painel p = (Painel)componenteCapturado;
+				localX = x - p.ultimoPaiX;
+				localY = y - p.ultimoPaiY;
+			}
+			componenteCapturado.aoTocar(localX, localY, true);
 		}
 	}
 
@@ -170,14 +176,14 @@ public class GerenciadorUI {
 	public void desenhar(SpriteBatch pincel, float delta) {
 		// desenha camadas em ordem crescente(de baixo para cima)
 		for(Integer numCamada : camadas.keySet()) {
-			ArrayList<Componente> componentesDaCamada = camadas.get(numCamada);
+			final ArrayList<Componente> componentesDaCamada = camadas.get(numCamada);
 			for(int i = 0; i < componentesDaCamada.size(); i++) {
 				componentesDaCamada.get(i).desenhar(pincel, delta, 0, 0);
 			}
 		}
 		// desenha dialogos sempre por cima
 		for(int i = 0; i < dialogos.size(); i++) {
-			CaixaDialogo dialogo = dialogos.get(i);
+			final CaixaDialogo dialogo = dialogos.get(i);
 			if(dialogo.ativa) {
 				dialogo.desenhar(pincel, delta, 0, 0);
 			}

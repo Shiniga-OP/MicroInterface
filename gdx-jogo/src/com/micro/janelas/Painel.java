@@ -38,7 +38,10 @@ public class Painel extends Componente {
     public float deslocamentoInicialY = 0;
     public Texture pixelBranco; // passado se o painel for rolavel para desenhar a barra
 
-    // construtor 1: painel classico/janela(Com bordas texturizadas)
+    // posição global do ultimo desenhar, usada para converter coordenadas no arraste
+    public float ultimoPaiX = 0, ultimoPaiY = 0;
+
+    // construtor 1: painel classico/janela(com bordas texturizadas)
     public Painel(PainelFatiado visual, float x, float y, float largura, float altura, float escala) {
         super(x, y, largura, altura);
         this.visual = visual;
@@ -46,7 +49,7 @@ public class Painel extends Componente {
         this.temFundo = true;
     }
 
-    // construtor 2: painel Transparente
+    // construtor 2: painel transparente
     public Painel(float x, float y, float largura, float altura) {
         super(x, y, largura, altura);
         this.temFundo = false;
@@ -146,6 +149,8 @@ public class Painel extends Componente {
 
     @Override
     public void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY) {
+        ultimoPaiX = paiX;
+        ultimoPaiY = paiY;
         final float desenharX = paiX + x;
         final float desenharY = paiY + y;
 

@@ -25,12 +25,6 @@ public class CampoTexto extends Componente {
     // pra notificar o gerenciador quando ganhar foco
     public GerenciadorUI gerenciador = null;
 
-    public interface Texto {
-        void aoMudar(String novoTexto);
-    }
-
-    public Texto mudanca;
-
     public CampoTexto(PainelFatiado visual, BitmapFont fonte, float x, float y, float largura, float altura, float escala) {
         super(x, y, largura, altura);
         this.visual = visual;
@@ -73,11 +67,7 @@ public class CampoTexto extends Componente {
         if(!emFoco) return false;
 
         if(c == Input.Keys.BACKSPACE && texto.length() > 0) {
-            String antigoTexto = texto;
-            texto = texto.substring(0, texto.length() - 1);
-            if(mudanca != null && !antigoTexto.equals(texto)) {
-                mudanca.aoMudar(texto);
-            }
+            texto = texto.substring(0, texto.length() - 1);       
             return true;
         }
         if(c == Input.Keys.ENTER) {
@@ -92,11 +82,7 @@ public class CampoTexto extends Componente {
         if(!emFoco) return false;
 
         if(caractere >= 32 && caractere <= 126 && texto.length() < limiteCaracteres) {
-            String antigoTexto = texto;
             texto += caractere;
-            if(mudanca != null && !antigoTexto.equals(texto)) {
-                mudanca.aoMudar(texto);
-            }
             return true;
         }
         return false;

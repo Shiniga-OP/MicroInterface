@@ -1,0 +1,53 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "CaixaDialogo",
+    herda: "Componente",
+    construtores: [
+        "PainelFatiado visual, BitmapFont fonte, float escala, ShapeRenderer pincelFormas"
+    ],
+    exemplo: `
+    CaixaDialogo dialogo = new CaixaDialogo(visual, fonte, 1.5f, pincelFormas);
+    dialogo.acaoOk = new Acao() {
+        @Override public void exec() { confirmar(); }
+    };
+    ui.add(dialogo);
+
+    // exibir
+    dialogo.mostrar("Atenção", "Deseja continuar?");
+    `,
+    campos: `
+    public float escala;
+    public String titulo;
+    public String msg;
+    public boolean ativa = false;         // controla visibilidade
+
+    public final PainelFatiado visual;
+    public final BitmapFont fonte;
+    public final ShapeRenderer pincelFormas;
+
+    public final Painel painelTitulo;
+    public final Rotulo rotuloTitulo;
+    public final Rotulo rotulomsg;
+    public final Painel painelBotoes;
+    public final Botao botaoFechar;
+    public final List<Componente> componentes; // botões adicionados por mostrar()
+
+    public GerenciadorUI gerenciador = null;
+    public Acao acaoX  = null;  // chamada ao fechar com X
+    public Acao acaoOk = null;  // chamada ao confirmar com OK
+    `,
+    metodos: [
+        {
+            nome: "mostrar",
+            args: "String titulo, String msg",
+            retorno: "void",
+            faz: "Define título e mensagem, limpa os botões anteriores, recria o botão OK centralizado e ativa a caixa."
+        },
+        {
+            nome: "aoArrastar",
+            args: "float toqueX, float toqueY",
+            retorno: "void",
+            faz: "Move a caixa seguindo o arraste iniciado na barra de título."
+        }
+    ]
+}

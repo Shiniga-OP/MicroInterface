@@ -38,6 +38,7 @@ local.properties
 *.apk
 *.jar
 *.html
+*.zip
 
 # ignore .settings
 .settings/

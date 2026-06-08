@@ -116,14 +116,14 @@ public class GerenciadorUI {
 			// se não tem componente capturado, processa normalmente
 		}
 		// processamento normal, processa camadas de cima para baixo
-		ArrayList<Integer> numsCamadas = new ArrayList<Integer>(camadas.keySet());
+		final ArrayList<Integer> numsCamadas = new ArrayList<Integer>(camadas.keySet());
 		for(int camadaIdc = numsCamadas.size() - 1; camadaIdc >= 0; camadaIdc--) {
 			final int numCamada = numsCamadas.get(camadaIdc);
 			final ArrayList<Componente> componentesCamada = camadas.get(numCamada);
 
 			// dentro da camada, processa de tras pra frente
 			for(int i = componentesCamada.size() - 1; i >= 0; i--) {
-				Componente c = componentesCamada.get(i);
+				final Componente c = componentesCamada.get(i);
 				if(c.contem(x, y)) {
 					if(c.aoTocar(x, y, pressionado)) {
 						// so captura se ta pressionando E o componente precisa de arraste

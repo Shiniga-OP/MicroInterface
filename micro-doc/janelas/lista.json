@@ -1,0 +1,50 @@
+{
+    pacote: "com.micro.janelas",
+    nome: "Lista",
+    herda: "Painel",
+    construtores: [
+        "PainelFatiado visual, float x, float y, float largura, float altura, float escala, Texture pixelBranco",
+        "float x, float y, float largura, float altura, Texture pixelBranco"
+    ],
+    exemplo: `
+    Lista lista = new Lista(visual, 0, 0, 300, 400, 1.5f, pixelBranco);
+    lista.alturaItem = 56f;
+
+    Botao btOpcao = new Botao(0, 0, 0, 0, "Opção 1", fonte, 1.5f, visual,
+        new Acao() {
+            @Override public void exec() { selecionar(); }
+        }
+    );
+    lista.addItem(btOpcao);
+    ui.add(lista);
+    `,
+    campos: `
+    public float alturaItem = 48f;   // altura padrão de cada item
+    public float espacoItem = 4f;    // espaço entre itens
+    public boolean alturaVariavel = false; // se true, respeita a altura original de cada item
+    `,
+    metodos: [
+        {
+            nome: "addItem",
+            args: "Componente item",
+            retorno: "void",
+            faz: "Adiciona um item ao final da lista, redimensiona para caber na largura disponível (descontando a barra), reorganiza as posições e rola para o topo."
+        },
+        {
+            nome: "removerItem",
+            args: "Componente item",
+            retorno: "void",
+            faz: "Remove um item, reorganiza as posições e ajusta o deslocamento se necessário."
+        },
+        {
+            nome: "limparItens",
+            retorno: "void",
+            faz: "Remove todos os itens e reinicia o rolamento."
+        },
+        {
+            nome: "reorganizar",
+            retorno: "void",
+            faz: "Redistribui as posições Y de todos os itens de cima para baixo com espacoItem entre eles."
+        }
+    ]
+}

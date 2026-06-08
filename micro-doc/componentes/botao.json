@@ -1,0 +1,76 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "Botao",
+    herda: "Componente",
+    construtores: [
+        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Acao acao",
+        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, Acao acao"
+    ],
+    exemplo: `
+    // botão com textura fatiada
+    Botao btConfirmar = new Botao(
+        10, 10, 200, 50,
+        "Confirmar", fonte, 1.5f,
+        visualFatiado,
+        new Acao() {
+            @Override public void exec() { confirmar(); }
+        }
+    );
+
+    // botão sólido alternável
+    Botao btMusica = new Botao(
+        10, 70, 200, 50,
+        "Música", fonte, 1.5f,
+        pixelBranco,
+        new Acao() {
+            @Override public void exec() { alternarMusica(); }
+        }
+    );
+    btMusica.tornarAlternavel(true);
+    ui.add(btMusica);
+    `,
+    campos: `
+    public Rotulo rotulo;
+    public Acao acaoClique;
+
+    public boolean pressionado = false;
+    public boolean alternavel = false;   // true se for um toggle/radio
+    public boolean selecionado = false;  // estado atual do toggle
+
+    // provedores visuais (use um ou outro)
+    public PainelFatiado visualFatiado;
+    public Texture pixelBranco;
+    public float escalaFatiado = 1.0f;
+
+    // cores usadas no modo pixelBranco
+    public Color corNormal     = new Color(0.3f, 0.4f, 0.5f, 1f);
+    public Color corPressionado = new Color(0.4f, 0.5f, 0.6f, 1f);
+    public Color corSelecionado = new Color(0.3f, 0.5f, 0.3f, 1f);
+    `,
+    metodos: [
+        {
+            nome: "iniciarRotulo",
+            args: "String texto, BitmapFont fonte, float escala",
+            retorno: "void",
+            faz: "Cria o Rotulo interno e o dimensiona com largura e altura do botão. Chamado automaticamente pelos construtores."
+        },
+        {
+            nome: "defTam",
+            args: "float largura, float altura",
+            retorno: "void",
+            faz: "Redefine o tamanho do botão e atualiza o Rotulo interno, recalculando a quebra de texto."
+        },
+        {
+            nome: "tornarAlternavel",
+            args: "boolean estadoInicial",
+            retorno: "Botao",
+            faz: "Transforma o botão em toggle/radio. Define alternavel = true, selecionado = estadoInicial e desloca o texto para a direita para dar espaço ao indicador visual. Retorna o próprio botão para encadeamento."
+        },
+        {
+            nome: "aoTocar",
+            args: "float toqueX, float toqueY, boolean pressionadoAgora",
+            retorno: "boolean",
+            faz: "Gerencia os estados de clique. Ao pressionar, marca pressionado = true. Ao soltar dentro do botão, inverte selecionado (se alternavel) e dispara acaoClique. Se o toque sair do botão, cancela o estado sem disparar a ação."
+        }
+    ]
+}

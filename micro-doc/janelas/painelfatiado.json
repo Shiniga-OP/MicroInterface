@@ -1,0 +1,30 @@
+{
+    pacote: "com.micro.janelas",
+    nome: "PainelFatiado",
+    construtores: [
+        "Texture textura",
+        "Texture textura, int tamanhoBase"
+    ],
+    exemplo: `
+    Texture textura = new Texture("ui/painel.png");
+    PainelFatiado visual = new PainelFatiado(textura, 8);
+
+    // usar diretamente
+    visual.desenhar(pincel, x, y, 300, 200, 1.5f);
+
+    // ou passar para componentes
+    Painel janela = new Painel(visual, 0, 0, 300, 200, 1.5f);
+    `,
+    campos: `
+    public TextureRegion[][] fatias; // grade 3x3 de fatias da textura
+    public int tamBase = 8;          // tamanho de cada fatia no arquivo original
+    `,
+    metodos: [
+        {
+            nome: "desenhar",
+            args: "SpriteBatch pincel, float x, float y, float largura, float altura, float escala",
+            retorno: "void",
+            faz: "Renderiza o painel em nine-correção: 4 cantos proporcionais à escala, 4 bordas esticadas e centro preenchido."
+        }
+    ]
+}

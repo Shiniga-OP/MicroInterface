@@ -1,0 +1,46 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "Rotulo",
+    herda: "Componente",
+    construtores: [
+        "String texto, BitmapFont fonte, float escala"
+    ],
+    exemplo: `
+    Rotulo titulo = new Rotulo("Olá mundo", fonte, 2.0f);
+    titulo.x = 10;
+    titulo.largura = 300;
+    titulo.altura = 50;
+    ui.add(titulo);
+    
+    // alterar o texto depois
+    titulo.defTexto("Novo texto");
+    `,
+    campos: `
+    public String texto;
+    public float escala;
+    public float espacoLinha = 1.3f;  // multiplicador de espaçamento entre linhas
+    public float alturaLinha;         // altura de uma linha na escala atual, calculado por quebrarTexto()
+    public final BitmapFont fonte;
+    public final GlyphLayout medidor;
+    public final Array<String> linhas; // linhas após quebra de texto
+    `,
+    metodos: [
+        {
+            nome: "defTexto",
+            args: "String texto",
+            retorno: "void",
+            faz: "Define um novo texto e recalcula a quebra de linhas."
+        },
+        {
+            nome: "defEscala",
+            args: "float escala",
+            retorno: "void",
+            faz: "Define a escala máxima do texto e recalcula a quebra de linhas."
+        },
+        {
+            nome: "quebrarTexto",
+            retorno: "void",
+            faz: "Divide o texto em linhas que caibam dentro da largura do componente. Se largura <= 0, mantém o texto em uma única linha. Atualiza alturaLinha."
+        }
+    ]
+}

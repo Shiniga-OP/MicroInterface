@@ -1,0 +1,23 @@
+{
+    pacote: "com.micro",
+    nome: "Versao",
+    exemplo: "Gdx.app.log(Versao.formatar(Versao.atual());",
+    campos: `
+    public static final int INICIO = 0x01;
+	public static final int LISTAS = 0x02;
+	public static final int OTIMI1 = 0x03;
+    `,
+    metodos: [
+        {
+            nome: "atual",
+            retorno: "int",
+            faz: "Retorna a versão atual binária da biblioteca."
+        },
+        {
+            nome: "formatar",
+            args: "int versao",
+            retorno: "String",
+            faz: "Retorna a versão atual em texto da biblioteca, por exemplo: 0.0.1, 0.0.2, 0.0.3 e etc."
+        }
+    ]
+}

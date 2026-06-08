@@ -1,0 +1,50 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "CampoTexto",
+    herda: "Componente",
+    construtores: [
+        "PainelFatiado visual, BitmapFont fonte, float x, float y, float largura, float altura, float escala"
+    ],
+    exemplo: `
+    CampoTexto campo = new CampoTexto(visual, fonte, 10, 10, 300, 40, 1.5f);
+    campo.padrao = "Digite seu nome...";
+    ui.add(campo);
+    `,
+    campos: `
+    public PainelFatiado visual;
+    public BitmapFont fonte;
+    public float escala;
+    public String texto = "";
+    public String padrao = "";        // texto exibido quando vazio
+    public boolean emFoco = false;
+    public int limiteCaracteres = 50;
+    public float margemInterna = 10;
+    public GerenciadorUI gerenciador = null;
+    `,
+    metodos: [
+        {
+            nome: "defTexto",
+            args: "String texto",
+            retorno: "void",
+            faz: "Define o texto do campo, truncando ao limiteCaracteres se necessário."
+        },
+        {
+            nome: "defFoco",
+            args: "boolean foco",
+            retorno: "void",
+            faz: "Define o foco do campo. Ao ganhar foco, notifica o gerenciador e exibe o teclado virtual. Ao perder, esconde o teclado."
+        },
+        {
+            nome: "processarTecla",
+            args: "int c",
+            retorno: "boolean",
+            faz: "Trata teclas para apagar e confirmar com enter."
+        },
+        {
+            nome: "processarCaractere",
+            args: "char caractere",
+            retorno: "boolean",
+            faz: "Acrescenta o caractere ao texto se for imprimível (32–126) e não exceder limiteCaracteres."
+        }
+    ]
+}

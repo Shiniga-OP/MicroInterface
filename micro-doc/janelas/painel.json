@@ -1,0 +1,73 @@
+{
+    pacote: "com.micro.janelas",
+    nome: "Painel",
+    herda: "Componente",
+    construtores: [
+        "PainelFatiado visual, float x, float y, float largura, float altura, float escala",
+        "float x, float y, float largura, float altura"
+    ],
+    exemplo: `
+    // painel com fundo texturizado
+    Painel janela = new Painel(visual, 50, 50, 300, 200, 1.5f);
+
+    // painel transparente como container
+    Painel linha = new Painel(0, 0, 300, 40);
+    linha.addAncorado(rotulo, Ancora.ESQUERDA, 10, 0);
+    janela.add(linha);
+
+    // painel rolável
+    Painel lista = new Painel(0, 0, 300, 200);
+    lista.tornarRolavel(pixelBranco);
+    `,
+    campos: `
+    public PainelFatiado visual;
+    public float escala = 1.0f;
+    public boolean temFundo;
+    public Color corFundo = Color.WHITE;
+
+    public float espacoEsquerda, espacoDireita, espacoSuperior, espacoInferior;
+
+    // rolagem
+    public boolean rolavel = false;
+    public float deslocamentoY;
+    public float alturaConteudo;
+    public float veloRolagem = 20f;
+    public boolean mostrarBarra = true;
+    public float larguraBarra = 24f;
+    public Color corBarra, corBarraArrastando, corFundoBarra;
+    public Texture pixelBranco;
+
+    // posição global do último desenhar(), usada para converter coordenadas no arraste
+    public float ultimoPaiX = 0, ultimoPaiY = 0;
+    `,
+    metodos: [
+        {
+            nome: "tornarRolavel",
+            args: "Texture pixelBranco",
+            retorno: "Painel",
+            faz: "Ativa o comportamento de rolagem vertical com barra de scroll. Retorna o próprio painel para encadeamento."
+        },
+        {
+            nome: "defEspaco",
+            args: "float todos",
+            retorno: "void",
+            faz: "Define o mesmo espaçamento interno nos quatro lados."
+        },
+        {
+            nome: "addAncorado",
+            args: "Componente filho, Ancora ancoragem, float margemX, float margemY",
+            retorno: "void",
+            faz: "Adiciona um filho posicionado automaticamente conforme a âncora, respeitando os espaçamentos internos."
+        },
+        {
+            nome: "calcularAlturaConteudo",
+            retorno: "void",
+            faz: "Recalcula alturaConteudo com base no filho mais alto. Chamado automaticamente por addAncorado quando rolavel = true."
+        },
+        {
+            nome: "precisaRolagem",
+            retorno: "boolean",
+            faz: "Retorna true se o conteúdo ultrapassar a altura do painel e rolavel = true."
+        }
+    ]
+}

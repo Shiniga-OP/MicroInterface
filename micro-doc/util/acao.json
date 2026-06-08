@@ -1,0 +1,19 @@
+{
+    pacote: "com.micro.util",
+    nome: "Acao",
+    exemplo: `
+    Acao fechar = new Acao() {
+        @Override
+        public void exec() {
+            Gdx.app.log("a ação foi executada");
+        }
+    };
+    `,
+    metodos: [
+        {
+            nome: "exec",
+            retorno: "void",
+            faz: "Personaliza a ação que uma classe vai executar em algum momento."
+        }
+    ]
+}

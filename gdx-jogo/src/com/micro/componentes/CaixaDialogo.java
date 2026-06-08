@@ -34,10 +34,7 @@ public class CaixaDialogo extends Componente {
     public float toqueInicialX;
     public float toqueInicialY;
 
-    public interface Fechar {
-        void aoFechar(boolean confirmou);
-    }
-    public Fechar aoFechar;
+    public Acao acaoX, acaoOk;
 
     public CaixaDialogo(PainelFatiado visual, BitmapFont fonte, float escala, ShapeRenderer pincelFormas) {
         super(0, 0, 400, 250);
@@ -76,16 +73,15 @@ public class CaixaDialogo extends Componente {
                 @Override
                 public void exec() {
                     ativa = false;
-                    if(aoFechar != null) aoFechar.aoFechar(false);
+                    if(acaoX != null) acaoX.exec();
                 }
             }
         );
     }
 
-    public void mostrar(String titulo, String msg, Fechar evento) {
+    public void mostrar(String titulo, String msg) {
         this.titulo = titulo;
         this.msg = msg;
-        this.aoFechar = evento;
         this.rotuloTitulo.defTexto(titulo);
         this.rotulomsg.defTexto(msg);
         this.ativa = true;
@@ -110,7 +106,7 @@ public class CaixaDialogo extends Componente {
                 @Override
                 public void exec() {
                     ativa = false;
-                    if(aoFechar != null) aoFechar.aoFechar(true);
+                    if(acaoOk != null) acaoOk.exec();
                 }
             }
         );

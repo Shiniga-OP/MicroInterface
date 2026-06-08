@@ -17,13 +17,16 @@ public class Painel extends Componente {
     public Color corFundo = Color.WHITE;
 
     // propriedades de espaço
-    public float espacoEsquerda = 0, espacoDireita = 0, espacoSuperior = 0, espacoInferior = 0;
+    public float espacoEsquerda;
+    public float espacoDireita;
+    public float espacoSuperior;
+    public float espacoInferior;
     protected Componente filhoCapturado = null;
 
     // propriedades de rolagem
     public boolean rolavel = false;
-    public float deslocamentoY = 0;
-    public float alturaConteudo = 0;
+    public float deslocamentoY;
+    public float alturaConteudo;
     public float veloRolagem = 20f;
 
     public boolean mostrarBarra = true;

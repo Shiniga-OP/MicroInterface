@@ -1,0 +1,126 @@
+{
+    pacote: "com.micro.util",
+    nome: "GerenciadorUI",
+    construtores: [
+        ""
+    ],
+    exemplo: `
+    public GerenciadorUI ui;
+    public SpriteBatch pincel;
+    public Bitmap fonte;
+    
+    @Override
+    public show() {
+        fonte = new Bitmap();
+        Rotulo titulo = new Rotulo("exemplo", fonte, 2.0f);
+        ui = new GerenciadorUI();
+        ui.add(titulo);
+        pincel = new SpriteBatch();
+    }
+    
+    @Override
+    public void render(float delta) {
+        pincel.begin();
+        ui.desenhar(pincel, delta);
+        pincel.end();
+    }
+    
+    @Override
+    public void dispose() {
+        ui.liberar();
+        fonte.dispose();
+    }
+    `,
+    campos: `
+    // sistema de camadas , TreeMap ordena automaticamente por chave(numero da camada)
+	public TreeMap<Integer, ArrayList<Componente>> camadas = new TreeMap<Integer, ArrayList<Componente>>();
+	public ArrayList<CaixaDialogo> dialogos = new ArrayList<CaixaDialogo>();
+	public CampoTexto campoEmFoco = null;
+	public Componente componenteCapturado = null;
+	// camadas padrão
+	public static final int CAMADA_FUNDO = 0;
+	public static final int CAMADA_PADRAO = 10;
+	public static final int CAMADA_UI = 20;
+	public static final int CAMADA_TOPO = 30;
+    `,
+    metodos: [
+        {
+            nome: "add",
+            args: "Componente componente",
+            retorno: "void",
+            faz: "Adiciona um componente a camada CAMADA_PADRAO. Objetos \"CaixaDialogo\" são sempre adicionados ao topo independente de camada qualquer."
+        },
+        {
+            nome: "addCamada",
+            args: "Componente componente, int numeroCamada",
+            retorno: "void",
+            faz: "Adiciona um componente em uma camada específica. Cria a camada automaticamente se ela não existir. Registra o gerenciador em CampoTexto filhos recursivamente."
+        },
+        {
+            nome: "rm",
+            args: "Componente componente",
+            retorno: "void",
+            faz: "Remove um componente da tela. CaixaDialogo é removido da lista de diálogos; demais componentes são removidos de todas as camadas."
+        },
+        {
+            nome: "registrarCamposTexto",
+            args: "Componente componente",
+            retorno: "void",
+            faz: "Percorre recursivamente o componente e seus filhos (Painel, CaixaDialogo) registrando o gerenciador em todo CampoTexto encontrado."
+        },
+        {
+            nome: "limpar",
+            args: "",
+            retorno: "void",
+            faz: "Remove todos os componentes de todas as camadas e limpa a lista de diálogos, campoEmFoco e componenteCapturado."
+        },
+        {
+            nome: "defFocoTexto",
+            args: "CampoTexto campo",
+            retorno: "void",
+            faz: "Define qual CampoTexto está em foco. Remove o foco do campo anterior automaticamente."
+        },
+        {
+            nome: "processarToque",
+            args: "float x, float y, boolean pressionado",
+            retorno: "boolean",
+            faz: "Distribui eventos de toque/clique. Diálogos têm prioridade. Ao soltar, o evento é enviado somente ao componenteCapturado se houver. Processa camadas de cima para baixo. Retorna true se algum componente consumiu o evento."
+        },
+        {
+            nome: "processarArraste",
+            args: "float x, float y",
+            retorno: "void",
+            faz: "Distribui eventos de arraste. Diálogos ativos recebem o evento. Se houver componenteCapturado, converte as coordenadas para espaço local (no caso de Painel) antes de repassar."
+        },
+        {
+            nome: "processarTecla",
+            args: "int tecla",
+            retorno: "boolean",
+            faz: "Repassa o evento de tecla ao CampoTexto em foco, se houver. Retorna false caso nenhum campo esteja em foco."
+        },
+        {
+            nome: "processarCaractere",
+            args: "char caractere",
+            retorno: "boolean",
+            faz: "Repassa o caractere digitado ao CampoTexto em foco, permitindo edição em tempo real. Retorna false caso nenhum campo esteja em foco."
+        },
+        {
+            nome: "desenhar",
+            args: "SpriteBatch pincel, float delta",
+            retorno: "void",
+            faz: "Renderiza todos os elementos ativos na tela. Desenha as camadas em ordem crescente (fundo → topo) e os diálogos ativos sempre por cima de tudo."
+        },
+        {
+            nome: "temDialogoAtivo",
+            args: "",
+            retorno: "boolean",
+            faz: "Pesquisa nos diálogos do gerenciador e retorna true se há algum ativo."
+        },
+        {
+            nome: "liberar",
+            args: "",
+            retorno: "void",
+            faz: "Libera os recursos de todos os componentes em todas as camadas, diálogos, componenteCapturado e campoEmFoco."
+        }
+    ]
+}

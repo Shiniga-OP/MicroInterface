@@ -1,0 +1,56 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "Componente",
+    construtores: [
+        "float x, float y, float largura, float altura"
+    ],
+    campos: `
+    public float x, y, largura, altura;
+    public int ordemZ = 0;
+    public List<Componente> filhos = new ArrayList<>();
+    `,
+    metodos: [
+        {
+            nome: "add",
+            args: "Componente filho",
+            retorno: "void",
+            faz: "Adiciona um componente filho a este componente."
+        },
+        {
+            nome: "contem",
+            args: "float toqueX, float toqueY",
+            retorno: "boolean",
+            faz: "Retorna true se a coordenada informada está dentro dos limites deste componente."
+        },
+        {
+            nome: "aoTocar",
+            args: "float toqueX, float toqueY, boolean pressionado",
+            retorno: "boolean",
+            faz: "Chamado quando o usuário toca/clica no componente. Retorna true se o componente consumiu o evento. Implementação padrão retorna false."
+        },
+        {
+            nome: "capturaArraste",
+            args: "",
+            retorno: "boolean",
+            faz: "Indica se o componente precisa receber eventos contínuos de arraste. Sobrescreva retornando true em componentes como PainelRolavel. Implementação padrão retorna false."
+        },
+        {
+            nome: "desenhar",
+            args: "SpriteBatch pincel, float delta, float paiX, float paiY",
+            retorno: "void",
+            faz: "Método abstrato. Renderiza o componente. paiX e paiY são as coordenadas absolutas do pai, usadas para calcular a posição real na tela."
+        },
+        {
+            nome: "desenharFilhos",
+            args: "SpriteBatch pincel, float delta, float atualX, float atualY",
+            retorno: "void",
+            faz: "Chama desenhar em todos os filhos passando as coordenadas absolutas atuais. Deve ser chamado dentro de desenhar() por subclasses que possuem filhos."
+        },
+        {
+            nome: "liberar",
+            args: "",
+            retorno: "void",
+            faz: "Libera os recursos do componente. Implementação padrão limpa a lista de filhos."
+        }
+    ]
+}

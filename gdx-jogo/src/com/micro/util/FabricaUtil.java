@@ -35,17 +35,13 @@ public class FabricaUtil {
         return linha;
     }
 	
-	public static Texture criarPixel(Color cor, int altura, int largura) {
-		final Pixmap pixmap = new Pixmap(altura, largura, Pixmap.Format.RGBA8888);
+	public static Texture criarPixel(Color cor) {
+		final Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(cor);
         pixmap.fill();
         final Texture pixel = new Texture(pixmap);
         pixmap.dispose();
 		return pixel;
-	}
-	
-	public static Texture criarPixel(Color cor) {
-		return criarPixel(cor, 1, 1);
 	}
 
     public static Botao criarSelecao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Acao acao) {

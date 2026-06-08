@@ -91,14 +91,15 @@ public class TelaMenu implements Screen, InputProcessor {
             new Acao() {
                 @Override
                 public void exec() {
-                    caixaDialogo.mostrar("Confirmacao", "A estrutura unificada da sua interface funcionou perfeitamente!", 
-                        new CaixaDialogo.Fechar() {
-                            @Override
-                            public void aoFechar(boolean confirmou) {
-                                Gdx.app.log("UI", "Caixa de dialogo fechada. Confirmou? " + confirmou);
-                            }
-                        }
-                    );
+					Acao aoFechar = new Acao() {
+						@Override
+						public void exec() {
+							Gdx.app.log("UI", "Caixa de dialogo fechada.");
+						}
+					};
+					caixaDialogo.acaoOk = aoFechar;
+					caixaDialogo.acaoX = aoFechar;
+                    caixaDialogo.mostrar("Confirmação", "A estrutura unificada da sua interface funcionou perfeitamente!");
                 }
             }
         );

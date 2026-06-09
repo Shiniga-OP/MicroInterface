@@ -1,0 +1,40 @@
+{
+    pacote: "com.micro.componentes",
+    nome: "BarraProgresso",
+    herda: "Componente",
+    construtores: [
+        "float x, float y, float largura, float altura, PainelFatiado visual, float escala",
+        "float x, float y, float largura, float altura, Texture pixelBranco"
+    ],
+    exemplo: `
+    // barra com fundo fatiado
+    BarraProgresso barraVida = new BarraProgresso(
+        10, 10, 200, 20,
+        visualFatiado, 1.5f
+    );
+    barraVida.progresso = 0.75f;
+    ui.add(barraVida);
+
+    // barra sólida
+    BarraProgresso barraExp = new BarraProgresso(
+        10, 40, 200, 16,
+        pixelBranco
+    );
+    barraExp.corPreenchimento = new Color(0.2f, 0.5f, 0.9f, 1f);
+    barraExp.progresso = 0.4f;
+    ui.add(barraExp);
+    `,
+    campos: `
+    public float progresso = 0f;  // valor entre 0.0 e 1.0
+
+    // provedores visuais (use um ou outro)
+    public PainelFatiado visualFatiado;
+    public Texture pixelBranco;
+    public float escalaFatiado = 1.0f;
+
+    // cores usadas no modo pixelBranco
+    public Color corFundo = new Color(0.15f, 0.15f, 0.2f, 1f);
+    public Color corPreenchimento = new Color(0.2f, 0.7f, 0.3f, 1f);
+    public Color corBorda = Color.LIGHT_GRAY;
+    `
+}

@@ -6,17 +6,18 @@
     Texture fundo = FabricaUtil.criarPixel(Color.BLACK, 320, 180);
     
     // criar linha de configuração numérica
-    Painel linhaVolume = FabricaUtil.criarConfigNum(
-        0, 0, 400, 40,
+    Painel painelVolume = new Painel(0, 0, 400, 40);
+    Rotulo rotulo = FabricaUtil.criarConfigNum(
+        painelVolume, 0, 0, 400, 40,
         "Volume", "10",
         fonte, 1.5f, visualBotao,
-        new Acao() {
+        new Runnable() {
             @Override
-            public void exec() {volume--}
+            public void run() {volume--}
         },
-        new Acao() {
+        new Runnable() {
             @Override
-            public void exec() {volume++}
+            public void run() {volume++}
         }
     );
     ui.add(linhaVolume);
@@ -26,8 +27,8 @@
         0, 0, 200, 40,
         "Música", fonte, 1.5f,
         pixelBranco, true,
-        new Acao() {
-            @Override public void exec() {alternarMusica();}
+        new Runnable() {
+            @Override public void run() {alternarMusica();}
         }
     );
     ui.add(musica);
@@ -35,19 +36,19 @@
     metodos: [
         {
             nome: "criarConfigNum",
-            args: "float x, float y, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Acao menos, Acao mais",
-            retorno: "Painel",
-            faz: "Monta um painel de configuração numérica com rótulo de título, rótulo de valor e dois botões (− e +) com as ações correspondentes."
+            args: "Painel linha, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Runnable menos, Runnable mais",
+            retorno: "Rotulo",
+            faz: "Monta dentro do painel linha um rótulo de título, um rótulo de valor e dois botões (− e +) com as ações correspondentes. Retorna o rótulo de valor para que o chamador possa atualizá-lo."
         },
         {
             nome: "criarPixel",
             args: "Color cor",
             retorno: "Texture",
-            faz: "Atalho de criarPixel(cor, 1, 1). Cria um pixel 1×1 da cor informada, ideal para uso rápido."
+            faz: "Cria uma Texture 1×1 da cor informada. Útil como pixel base para desenhar retângulos sólidos e barras de progresso."
         },
         {
             nome: "criarSelecao",
-            args: "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Acao acao",
+            args: "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Runnable acao",
             retorno: "Botao",
             faz: "Cria um Botao alternável já configurado com tornarAlternavel(estadoInicial). O estadoInicial define se começa ligado ou desligado."
         }

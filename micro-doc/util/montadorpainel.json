@@ -1,0 +1,41 @@
+{
+    pacote: "com.micro.util",
+    nome: "MontadorPainel",
+    exemplo: `
+    MontadorPainel montador = new MontadorPainel(painel, 10f, 6f);
+    montador
+        .add(rotulTitulo)
+        .add(btOpcao1)
+        .add(btOpcao2)
+        .pular(10f)
+        .addFixo(barraProgresso)
+        .add(btConfirmar);
+    `,
+    campos: `
+    public Painel painel;
+    public float margem;
+    public float espaco;
+    public float larguraDisponivel;  // painel.largura - margem * 2
+    public float cursorY;            // posição Y onde o próximo componente será colocado
+    `,
+    metodos: [
+        {
+            nome: "add",
+            args: "Componente c",
+            retorno: "MontadorPainel",
+            faz: "Posiciona o componente com x = margem e y calculado pelo cursorY, descendo pelo componente e pelo espaço. Se for Botao, chama defTam para ajustar a largura; caso contrário, atribui larguraDisponivel diretamente. Retorna o próprio montador para encadeamento."
+        },
+        {
+            nome: "addFixo",
+            args: "Componente c",
+            retorno: "MontadorPainel",
+            faz: "Igual a add, mas não ajusta a largura do componente. Útil para componentes que já têm tamanho próprio definido, como barras de progresso ou painéis internos."
+        },
+        {
+            nome: "pular",
+            args: "float altura",
+            retorno: "MontadorPainel",
+            faz: "Avança o cursorY sem adicionar nenhum componente. Útil para criar separações visuais entre grupos de elementos."
+        }
+    ]
+}

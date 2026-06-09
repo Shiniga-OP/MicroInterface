@@ -7,8 +7,8 @@
     ],
     exemplo: `
     CaixaDialogo dialogo = new CaixaDialogo(visual, fonte, 1.5f, pincelFormas);
-    dialogo.acaoOk = new Acao() {
-        @Override public void exec() { confirmar(); }
+    dialogo.acaoOk = new Runnable() {
+        @Override public void run() { confirmar(); }
     };
     ui.add(dialogo);
 
@@ -19,7 +19,7 @@
     public float escala;
     public String titulo;
     public String msg;
-    public boolean ativa = false;         // controla visibilidade
+    public boolean ativa = false; // controla visibilidade
 
     public final PainelFatiado visual;
     public final BitmapFont fonte;
@@ -33,8 +33,8 @@
     public final List<Componente> componentes; // botões adicionados por mostrar()
 
     public GerenciadorUI gerenciador = null;
-    public Acao acaoX  = null;  // chamada ao fechar com X
-    public Acao acaoOk = null;  // chamada ao confirmar com OK
+    public Runnable acaoX = null; // chamada ao fechar com X
+    public Runnable acaoOk = null; // chamada ao confirmar com OK
     `,
     metodos: [
         {

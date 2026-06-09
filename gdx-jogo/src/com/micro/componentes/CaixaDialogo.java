@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import com.micro.janelas.PainelFatiado;
 import com.micro.janelas.Painel;
-import com.micro.util.Acao;
 import com.micro.util.Ancora;
 import com.micro.util.GerenciadorUI;
 
@@ -34,7 +33,7 @@ public class CaixaDialogo extends Componente {
     public float toqueInicialX;
     public float toqueInicialY;
 
-    public Acao acaoX, acaoOk;
+    public Runnable acaoX, acaoOk;
 
     public CaixaDialogo(PainelFatiado visual, BitmapFont fonte, float escala, ShapeRenderer pincelFormas) {
         super(0, 0, 400, 250);
@@ -69,11 +68,11 @@ public class CaixaDialogo extends Componente {
             fonte, 
             escala, 
             visual, 
-            new Acao() {
+            new Runnable() {
                 @Override
-                public void exec() {
+                public void run() {
                     ativa = false;
-                    if(acaoX != null) acaoX.exec();
+                    if(acaoX != null) acaoX.run();
                 }
             }
         );
@@ -102,11 +101,11 @@ public class CaixaDialogo extends Componente {
             fonte, 
             escala, 
             visual, 
-            new Acao() {
+            new Runnable() {
                 @Override
-                public void exec() {
+                public void run() {
                     ativa = false;
-                    if(acaoOk != null) acaoOk.exec();
+                    if(acaoOk != null) acaoOk.run();
                 }
             }
         );

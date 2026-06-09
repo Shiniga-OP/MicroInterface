@@ -3,8 +3,8 @@
     nome: "Botao",
     herda: "Componente",
     construtores: [
-        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Acao acao",
-        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, Acao acao"
+        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Runnable acao",
+        "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, Runnable acao"
     ],
     exemplo: `
     // botão com textura fatiada
@@ -12,8 +12,9 @@
         10, 10, 200, 50,
         "Confirmar", fonte, 1.5f,
         visualFatiado,
-        new Acao() {
-            @Override public void exec() { confirmar(); }
+        new Runnable() {
+            @Override public void run() { confirmar();
+            }
         }
     );
 
@@ -22,8 +23,9 @@
         10, 70, 200, 50,
         "Música", fonte, 1.5f,
         pixelBranco,
-        new Acao() {
-            @Override public void exec() { alternarMusica(); }
+        new Runnable() {
+            @Override public void run() { alternarMusica();
+            }
         }
     );
     btMusica.tornarAlternavel(true);
@@ -31,7 +33,7 @@
     `,
     campos: `
     public Rotulo rotulo;
-    public Acao acaoClique;
+    public Runnable acaoClique;
 
     public boolean pressionado = false;
     public boolean alternavel = false;   // true se for um toggle/radio
@@ -43,7 +45,7 @@
     public float escalaFatiado = 1.0f;
 
     // cores usadas no modo pixelBranco
-    public Color corNormal     = new Color(0.3f, 0.4f, 0.5f, 1f);
+    public Color corNormal = new Color(0.3f, 0.4f, 0.5f, 1f);
     public Color corPressionado = new Color(0.4f, 0.5f, 0.6f, 1f);
     public Color corSelecionado = new Color(0.3f, 0.5f, 0.3f, 1f);
     `,

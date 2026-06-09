@@ -24,8 +24,8 @@ public class Rotulo extends Componente {
 		quebrarTexto();
     }
 
-	public void defTexto(String texto) {
-		this.texto = texto;
+	public void defTexto(Object texto) {
+		this.texto = texto.toString();
 		quebrarTexto();
 	}
 	

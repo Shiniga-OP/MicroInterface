@@ -5,11 +5,10 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.micro.janelas.PainelFatiado;
-import com.micro.util.Acao;
 
 public class Botao extends Componente {
     public Rotulo rotulo;
-    public Acao acaoClique;
+    public Runnable acaoClique;
 
     // estados do Botão
     public boolean pressionado = false;
@@ -27,7 +26,7 @@ public class Botao extends Componente {
     public Color corSelecionado = new Color(0.3f, 0.5f, 0.3f, 1f);
 
     // construtor 1: para botões baseados em texturas fatiadas (ex: Janelas de Menu, UI do Jogo)
-    public Botao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Acao acao) {
+    public Botao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Runnable acao) {
         super(x, y, largura, altura);
         this.visualFatiado = visual;
         this.escalaFatiado = escala;
@@ -36,7 +35,7 @@ public class Botao extends Componente {
     }
 
     // construtor 2: para botões solidos/geometricos(substitui o antigo ItemBotao)
-    public Botao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, Acao acao) {
+    public Botao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, Runnable acao) {
         super(x, y, largura, altura);
         this.pixelBranco = pixelBranco;
         this.acaoClique = acao;
@@ -82,7 +81,7 @@ public class Botao extends Componente {
                         this.selecionado = !this.selecionado;
                     }
                     if(acaoClique != null) {
-                        acaoClique.exec();
+                        acaoClique.run();
                     }
                 }
                 this.pressionado = false;

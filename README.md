@@ -5,7 +5,7 @@ Uma biblioteca de interface que usa LibGDX.
 ## Capacidades:
 Criar botões de seleção, numeração,
  caixas de diálogo, campos de texto,
- listas.
+ listas, barras de progresso.
 
 <img
 src="gdx-android/assets/micro.png"

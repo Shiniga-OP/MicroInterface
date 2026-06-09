@@ -11,17 +11,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.micro.componentes.Botao;
 import com.micro.componentes.CaixaDialogo;
 import com.micro.componentes.CampoTexto;
-import com.micro.componentes.Rotulo;
+import com.micro.componentes.BarraProgresso;
 import com.micro.janelas.Lista;
 import com.micro.janelas.Painel;
 import com.micro.janelas.PainelFatiado;
-import com.micro.util.Acao;
 import com.micro.util.FabricaUtil;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.InputProcessor;
 import com.micro.util.GerenciadorUI;
+import com.micro.util.MontadorPainel;
 import com.micro.Versao;
+import com.micro.componentes.Rotulo;
 
 public class TelaMenu implements Screen, InputProcessor {
     public SpriteBatch pincel;
@@ -39,6 +40,10 @@ public class TelaMenu implements Screen, InputProcessor {
     public Lista lista;
     public Painel painelTeste;
     public boolean painelTesteVisivel = false;
+    public BarraProgresso barraProgresso;
+	public Rotulo rotuloVolume;
+	
+	public int volume = 5;
 
     @Override
     public void show() {
@@ -53,47 +58,73 @@ public class TelaMenu implements Screen, InputProcessor {
         visualFatiado = new PainelFatiado(texturaUi);
 
         float largPainel = 500;
-        float altPainel = 400;
+        float altPainel = 530;
         float painelX = (Gdx.graphics.getWidth() - largPainel) / 2f;
         float painelY = (Gdx.graphics.getHeight() - altPainel) / 2f;
 
         painelPrincipal = new Painel(visualFatiado, painelX, painelY, largPainel, altPainel, 2.0f);
 
+        final float larg = largPainel - 50 * 2;
+
         Rotulo titulo = new Rotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), fonte, 2.0f);
-        titulo.x = (largPainel - 200) / 2f;
-        titulo.y = altPainel - 50;
         titulo.largura = 200;
         titulo.altura = 50;
-        painelPrincipal.add(titulo);
 
-        CampoTexto campo = new CampoTexto(visualFatiado, fonte, 50, altPainel - 120, largPainel - 100, 40, 2.0f);
+        CampoTexto campo = new CampoTexto(visualFatiado, fonte, 0, 0, larg, 40, 2.0f);
         campo.padrao = "Digite seu nome aqui...";
-        painelPrincipal.add(campo);
-
-        Painel configVolume = FabricaUtil.criarConfigNum(50, altPainel - 190, largPainel - 100, 40, "Volume do Som:", "7", fonte, 2.0f, visualFatiado, 
-            new Acao() {
-                @Override public void exec() { Gdx.app.log("UI", "Volume diminuido"); }
-            }, 
-            new Acao() {
-                @Override public void exec() { Gdx.app.log("UI", "Volume aumentado"); }
+		
+		Painel painelVolume = new Painel(0, 0, larg, 40);
+        rotuloVolume = FabricaUtil.criarConfigNum(painelVolume, larg, 40, "Volume do Som:", "7", fonte, 2.0f, visualFatiado,
+            new Runnable() {
+                @Override public void run() {
+					volume--;
+					rotuloVolume.defTexto(volume);
+				}
+            },
+            new Runnable() {
+                @Override public void run() {
+					volume++;
+					rotuloVolume.defTexto(volume);
+				}
             }
         );
-        painelPrincipal.add(configVolume);
-
-        Botao caixaSelecaoMusica = FabricaUtil.criarSelecao(50, altPainel - 250, largPainel - 100, 40, "Ativar Musicas de Fundo", fonte, 2.0f, pixelBranco, true, 
-            new Acao() {
-                @Override public void exec() { Gdx.app.log("UI", "Alternou estado da musica"); }
+        Botao caixaSelecaoMusica = FabricaUtil.criarSelecao(0, 0, 0, 40, "Ativar Musicas de Fundo", fonte, 2.0f, pixelBranco, true,
+            new Runnable() {
+                @Override public void run() { Gdx.app.log("UI", "Alternou estado da musica"); }
             }
         );
-        painelPrincipal.add(caixaSelecaoMusica);
+        Rotulo rotuloBarra = new Rotulo("Progresso:", fonte, 2.0f);
+        rotuloBarra.largura = 0;
+        rotuloBarra.altura = 20;
 
-        Botao btAviso = new Botao(50, 40, largPainel - 100, 45, "ABRIR CAIXA DE DIALOGO", fonte, 2.0f, visualFatiado, 
-            new Acao() {
+        barraProgresso = new BarraProgresso(0, 0, 0, 24, pixelBranco);
+
+        Botao btProgresso = new Botao(0, 0, 0, 40, "+ 10% PROGRESSO", fonte, 2.0f, pixelBranco,
+            new Runnable() {
                 @Override
-                public void exec() {
-					Acao aoFechar = new Acao() {
+                public void run() {
+                    barraProgresso.progresso = Math.min(1f, barraProgresso.progresso + 0.1f);
+                    Gdx.app.log("UI", "Progresso: " + (int)(barraProgresso.progresso * 100) + "%");
+                }
+            }
+        );
+        Botao btTeste = new Botao(0, 0, 0, 45, "TESTE: PAINEL ANINHADO", fonte, 2.0f, visualFatiado,
+            new Runnable() {
+                @Override
+                public void run() {
+                    painelTesteVisivel = !painelTesteVisivel;
+                    if(painelTesteVisivel) ui.addCamada(painelTeste, GerenciadorUI.CAMADA_TOPO);
+                    else ui.rm(painelTeste);
+                }
+            }
+        );
+        Botao btAviso = new Botao(0, 0, 0, 45, "ABRIR CAIXA DE DIALOGO", fonte, 2.0f, visualFatiado,
+            new Runnable() {
+                @Override
+                public void run() {
+					final Runnable aoFechar = new Runnable() {
 						@Override
-						public void exec() {
+						public void run() {
 							Gdx.app.log("UI", "Caixa de dialogo fechada.");
 						}
 					};
@@ -103,19 +134,16 @@ public class TelaMenu implements Screen, InputProcessor {
                 }
             }
         );
-        painelPrincipal.add(btAviso);
-
-        Botao btTeste = new Botao(50, 90, largPainel - 100, 45, "TESTE: PAINEL ANINHADO", fonte, 2.0f, visualFatiado,
-            new Acao() {
-                @Override
-                public void exec() {
-                    painelTesteVisivel = !painelTesteVisivel;
-                    if(painelTesteVisivel) ui.addCamada(painelTeste, GerenciadorUI.CAMADA_TOPO);
-                    else ui.rm(painelTeste);
-                }
-            }
-        );
-        painelPrincipal.add(btTeste);
+        MontadorPainel montador = new MontadorPainel(painelPrincipal, 50, 10);
+        montador.addFixo(titulo)
+            .add(campo)
+            .add(painelVolume)
+            .add(caixaSelecaoMusica)
+            .addFixo(rotuloBarra)
+            .add(barraProgresso)
+            .add(btProgresso)
+            .add(btTeste)
+            .add(btAviso);
 
         // caixa de dialogo configurada com a escala padrão interna 1.0f
         caixaDialogo = new CaixaDialogo(visualFatiado, fonte, 2.0f, pincelFormas);
@@ -136,8 +164,8 @@ public class TelaMenu implements Screen, InputProcessor {
         for(int i = 0; i < opcoes.length; i++) {
             final String nome = opcoes[i];
             lista.addItem(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
-							  new Acao() {
-								  @Override public void exec() { Gdx.app.log("Lista", "Clicou: " + nome); }
+							  new Runnable() {
+								  @Override public void run() { Gdx.app.log("Lista", "Clicou: " + nome); }
 							  }
 						  ));
         }
@@ -168,8 +196,8 @@ public class TelaMenu implements Screen, InputProcessor {
         for(int i = 0; i < itens.length; i++) {
             final String nome = itens[i];
             listaInterna.addItem(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
-									 new Acao() {
-										 @Override public void exec() { Gdx.app.log("Teste", "Clicou: " + nome); }
+									 new Runnable() {
+										 @Override public void run() { Gdx.app.log("Teste", "Clicou: " + nome); }
 									 }
 								 ));
         }

@@ -48,7 +48,6 @@
         },
         {
             nome: "liberar",
-            args: "",
             retorno: "void",
             faz: "Libera os recursos do componente. Implementação padrão limpa a lista de filhos."
         }

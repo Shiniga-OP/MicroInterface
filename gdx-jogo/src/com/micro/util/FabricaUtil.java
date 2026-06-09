@@ -10,42 +10,38 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class FabricaUtil {
-    public static Painel criarConfigNum(float x, float y, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Acao menos, Acao mais) {
-        Painel linha = new Painel(x, y, largura, altura);
-
-        Rotulo rotuloTitulo = new Rotulo(titulo, fonte, escala);
+    public static Rotulo criarConfigNum(Painel linha, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Runnable menos, Runnable mais) {
+        final Rotulo rotuloTitulo = new Rotulo(titulo, fonte, escala);
         rotuloTitulo.x = 15;
         rotuloTitulo.largura = largura - 200;
         rotuloTitulo.altura = altura;
         linha.add(rotuloTitulo);
 
-        Rotulo rotuloValor = new Rotulo(valorInicial, fonte, escala);
+        final Rotulo rotuloValor = new Rotulo(valorInicial, fonte, escala);
         rotuloValor.x = largura - 180;
         rotuloValor.largura = 60;
         rotuloValor.altura = altura;
         linha.add(rotuloValor);
 
-        float tamBtn = altura - 10;
-        Botao btnMenos = new Botao(largura - 110, 5, tamBtn, tamBtn, "-", fonte, escala, visualBotao, menos);
-        Botao btnMais = new Botao(largura - 55, 5, tamBtn, tamBtn, "+", fonte, escala, visualBotao, mais);
-
-        linha.add(btnMenos);
-        linha.add(btnMais);
-
-        return linha;
+        final float tambt = altura - 10;
+        final Botao btMenos = new Botao(largura - 110, 5, tambt, tambt, "-", fonte, escala, visualBotao, menos);
+        final Botao btMais = new Botao(largura - 55, 5, tambt, tambt, "+", fonte, escala, visualBotao, mais);
+        linha.add(btMenos);
+        linha.add(btMais);
+		return rotuloValor;
     }
-	
-	public static Texture criarPixel(Color cor) {
-		final Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+
+    public static Texture criarPixel(Color cor) {
+        final Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(cor);
         pixmap.fill();
         final Texture pixel = new Texture(pixmap);
         pixmap.dispose();
-		return pixel;
-	}
+        return pixel;
+    }
 
-    public static Botao criarSelecao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Acao acao) {
-        Botao selecao = new Botao(x, y, largura, altura, texto, fonte, escala, pixelBranco, acao);
+    public static Botao criarSelecao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Runnable acao) {
+        final Botao selecao = new Botao(x, y, largura, altura, texto, fonte, escala, pixelBranco, acao);
         selecao.tornarAlternavel(estadoInicial);
         return selecao;
     }

@@ -11,16 +11,17 @@
     lista.alturaItem = 56f;
 
     Botao btOpcao = new Botao(0, 0, 0, 0, "Opção 1", fonte, 1.5f, visual,
-        new Acao() {
-            @Override public void exec() { selecionar(); }
+        new Runnable() {
+            @Override public void run() { selecionar();
+            }
         }
     );
     lista.addItem(btOpcao);
     ui.add(lista);
     `,
     campos: `
-    public float alturaItem = 48f;   // altura padrão de cada item
-    public float espacoItem = 4f;    // espaço entre itens
+    public float alturaItem = 48f; // altura padrão de cada item
+    public float espacoItem = 4f; // espaço entre itens
     public boolean alturaVariavel = false; // se true, respeita a altura original de cada item
     `,
     metodos: [

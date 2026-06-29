@@ -8,8 +8,10 @@ import com.micro.componentes.Componente;
 import com.micro.componentes.CaixaDialogo;
 import com.micro.componentes.CampoTexto;
 import com.micro.janelas.Painel;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.Gdx;
 
-public class GerenciadorUI {
+public class GerenciadorUI implements InputProcessor {
 	// sistema de camadas , TreeMap ordena automaticamente por chave(numero da camada)
 	public TreeMap<Integer, ArrayList<Componente>> camadas = new TreeMap<Integer, ArrayList<Componente>>();
 	public ArrayList<CaixaDialogo> dialogos = new ArrayList<CaixaDialogo>();
@@ -207,4 +209,36 @@ public class GerenciadorUI {
 		if(componenteCapturado != null) componenteCapturado.liberar();
 		if(campoEmFoco != null) campoEmFoco.liberar();
 	}
+	
+	@Override
+	public boolean keyDown(int p) {
+		return processarTecla(p);
+	}
+
+	@Override
+	public boolean keyTyped(char caractere) {
+		return processarCaractere(caractere);
+	}
+
+	@Override
+	public boolean touchDown(int telaX, int telaY, int p, int b) {
+		final float uiY = Gdx.graphics.getHeight() - telaY;
+		return processarToque(telaX, uiY, true);
+	}
+
+	@Override
+	public boolean touchUp(int telaX, int telaY, int p, int b) {
+		final float uiY = Gdx.graphics.getHeight() - telaY;
+		return processarToque(telaX, uiY, false);
+	}
+
+	@Override
+	public boolean touchDragged(int telaX, int telaY, int p) {
+		final float uiY = Gdx.graphics.getHeight() - telaY;
+		processarArraste(telaX, uiY);
+		return false;
+	}
+	@Override public boolean keyUp(int p) { return false; }
+	@Override public boolean mouseMoved(int telaX, int telaY) { return false; }
+	@Override public boolean scrolled(float telaX, float telaY) { return false; }
 }

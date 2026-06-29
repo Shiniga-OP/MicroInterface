@@ -18,13 +18,12 @@ import com.micro.janelas.PainelFatiado;
 import com.micro.util.FabricaUtil;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.InputProcessor;
 import com.micro.util.GerenciadorUI;
 import com.micro.util.MontadorPainel;
 import com.micro.Versao;
 import com.micro.componentes.Rotulo;
 
-public class TelaMenu implements Screen, InputProcessor {
+public class TelaMenu implements Screen {
     public SpriteBatch pincel;
     public ShapeRenderer pincelFormas;
     public BitmapFont fonte;
@@ -52,26 +51,23 @@ public class TelaMenu implements Screen, InputProcessor {
         fonte = new BitmapFont();
 
         texturaUi = new Texture(Gdx.files.internal("texturas/ui.png"));
-
         pixelBranco = FabricaUtil.criarPixel(Color.WHITE);
-
         visualFatiado = new PainelFatiado(texturaUi);
+		
+		FabricaUtil.defPadrao(visualFatiado, fonte, 2.0f);
 
         float largPainel = 500;
         float altPainel = 530;
         float painelX = (Gdx.graphics.getWidth() - largPainel) / 2f;
         float painelY = (Gdx.graphics.getHeight() - altPainel) / 2f;
 
-        painelPrincipal = new Painel(visualFatiado, painelX, painelY, largPainel, altPainel, 2.0f);
+        painelPrincipal = FabricaUtil.criarPainel(painelX, painelY, largPainel, altPainel);
 
         final float larg = largPainel - 50 * 2;
 
-        Rotulo titulo = new Rotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), fonte, 2.0f);
-        titulo.largura = 200;
-        titulo.altura = 50;
-
-        CampoTexto campo = new CampoTexto(visualFatiado, fonte, 0, 0, larg, 40, 2.0f);
-        campo.padrao = "Digite seu nome aqui...";
+        Rotulo titulo = FabricaUtil.criarRotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), 0, 0, 200, 50);
+        
+        CampoTexto campo = FabricaUtil.criarCampoTexto("Digite seu nome aqui...", 0, 0, larg, 40);
 		
 		Painel painelVolume = new Painel(0, 0, larg, 40);
         rotuloVolume = FabricaUtil.criarConfigNum(painelVolume, larg, 40, "Volume do Som:", "7", fonte, 2.0f, visualFatiado,
@@ -93,10 +89,8 @@ public class TelaMenu implements Screen, InputProcessor {
                 @Override public void run() { Gdx.app.log("UI", "Alternou estado da musica"); }
             }
         );
-        Rotulo rotuloBarra = new Rotulo("Progresso:", fonte, 2.0f);
-        rotuloBarra.largura = 0;
-        rotuloBarra.altura = 20;
-
+        Rotulo rotuloBarra = FabricaUtil.criarRotulo("Progresso:", 0, 0, 0, 20);
+        
         barraProgresso = new BarraProgresso(0, 0, 0, 24, pixelBranco);
 
         Botao btProgresso = new Botao(0, 0, 0, 40, "+ 10% PROGRESSO", fonte, 2.0f, pixelBranco,
@@ -122,14 +116,12 @@ public class TelaMenu implements Screen, InputProcessor {
             new Runnable() {
                 @Override
                 public void run() {
-					final Runnable aoFechar = new Runnable() {
+					caixaDialogo.aoFechar = new CaixaDialogo.Fechar() {
 						@Override
-						public void run() {
+						public void confirmou(boolean acao) {
 							Gdx.app.log("UI", "Caixa de dialogo fechada.");
 						}
 					};
-					caixaDialogo.acaoOk = aoFechar;
-					caixaDialogo.acaoX = aoFechar;
                     caixaDialogo.mostrar("Confirmação", "A estrutura unificada da sua interface funcionou perfeitamente!");
                 }
             }
@@ -146,7 +138,7 @@ public class TelaMenu implements Screen, InputProcessor {
             .add(btAviso);
 
         // caixa de dialogo configurada com a escala padrão interna 1.0f
-        caixaDialogo = new CaixaDialogo(visualFatiado, fonte, 2.0f, pincelFormas);
+        caixaDialogo = new CaixaDialogo(visualFatiado, fonte, 2.0f);
         caixaDialogo.x = (Gdx.graphics.getWidth() - caixaDialogo.largura) / 2f;
         caixaDialogo.y = (Gdx.graphics.getHeight() - caixaDialogo.altura) / 2f;
 
@@ -208,7 +200,7 @@ public class TelaMenu implements Screen, InputProcessor {
 		ui.add(lista);
 		ui.add(caixaDialogo);
 
-        Gdx.input.setInputProcessor(this);
+        Gdx.input.setInputProcessor(ui);
     }
 
     @Override
@@ -233,38 +225,7 @@ public class TelaMenu implements Screen, InputProcessor {
 		ui.liberar();
     }
 
-	@Override
-	public boolean keyDown(int p) {
-		return ui.processarTecla(p);
-	}
-
-	@Override
-	public boolean keyTyped(char caractere) {
-		return ui.processarCaractere(caractere);
-	}
-
-	@Override
-	public boolean touchDown(int telaX, int telaY, int p, int b) {
-		float uiY = Gdx.graphics.getHeight() - telaY;
-		return ui.processarToque(telaX, uiY, true);
-	}
-
-	@Override
-	public boolean touchUp(int telaX, int telaY, int p, int b) {
-		float uiY = Gdx.graphics.getHeight() - telaY;
-		return ui.processarToque(telaX, uiY, false);
-	}
-
-	@Override
-	public boolean touchDragged(int telaX, int telaY, int p) {
-		float uiY = Gdx.graphics.getHeight() - telaY;
-		ui.processarArraste(telaX, uiY);
-		return false;
-	}
     @Override public void hide() {}
     @Override public void pause() {}
     @Override public void resume() {}
-	@Override public boolean keyUp(int p) { return false; }
-	@Override public boolean mouseMoved(int telaX, int telaY) { return false; }
-	@Override public boolean scrolled(float telaX, float telaY) { return false; }
 }

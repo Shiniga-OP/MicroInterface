@@ -16,7 +16,6 @@ public class CaixaDialogo extends Componente {
     public String titulo;
     public String msg;
     public boolean ativa = false;
-    public final ShapeRenderer pincelFormas;
 	public final PainelFatiado visual;
     public final BitmapFont fonte;
     public final Painel painelTitulo;
@@ -33,15 +32,18 @@ public class CaixaDialogo extends Componente {
     public float toqueInicialX;
     public float toqueInicialY;
 
-    public Runnable acaoX, acaoOk;
+    public Fechar aoFechar;
+	
+	public static interface Fechar {
+		public void confirmou(boolean acao);
+	}
 
-    public CaixaDialogo(PainelFatiado visual, BitmapFont fonte, float escala, ShapeRenderer pincelFormas) {
+    public CaixaDialogo(PainelFatiado visual, BitmapFont fonte, float escala) {
         super(0, 0, 400, 250);
         this.visual = visual;
         this.fonte = fonte;
         this.escala = escala;
-        this.pincelFormas = pincelFormas;
-
+        
         // painel para o titulo(transparente)
         this.painelTitulo = new Painel(0, altura - 50, largura, 50);
         this.rotuloTitulo = new Rotulo("Aviso", fonte, escala);
@@ -72,7 +74,7 @@ public class CaixaDialogo extends Componente {
                 @Override
                 public void run() {
                     ativa = false;
-                    if(acaoX != null) acaoX.run();
+                    if(aoFechar != null) aoFechar.confirmou(false);
                 }
             }
         );
@@ -105,7 +107,7 @@ public class CaixaDialogo extends Componente {
                 @Override
                 public void run() {
                     ativa = false;
-                    if(acaoOk != null) acaoOk.run();
+                    if(aoFechar != null) aoFechar.confirmou(true);
                 }
             }
         );
@@ -155,16 +157,6 @@ public class CaixaDialogo extends Componente {
 
         final float desenharX = paiX + x;
         final float desenharY = paiY + y;
-
-        // desenha o fundo escurecido atras da caixa
-        pincel.end();
-        if(pincelFormas != null) {
-            pincelFormas.begin(ShapeRenderer.ShapeType.Filled);
-            pincelFormas.setColor(0, 0, 0, 0.6f);
-            pincelFormas.rect(paiX - 2000, paiY - 2000, 4000, 4000);
-            pincelFormas.end();
-        }
-        pincel.begin();
 
         // desenha a estrutura da caixa
         visual.desenhar(pincel, desenharX, desenharY, largura, altura, escala);

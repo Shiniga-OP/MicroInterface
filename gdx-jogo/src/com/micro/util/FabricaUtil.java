@@ -8,8 +8,20 @@ import com.micro.janelas.Painel;
 import com.micro.janelas.PainelFatiado;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.micro.componentes.CampoTexto;
+import com.micro.componentes.CaixaDialogo;
 
 public class FabricaUtil {
+	public static PainelFatiado visualPadrao;
+	public static BitmapFont fontePadrao;
+	public static float escalaPadrao = 2.0f;
+	
+	public static void defPadrao(PainelFatiado visual, BitmapFont fonte, float escala) {
+		visualPadrao = visual;
+		fontePadrao = fonte;
+		escalaPadrao = escala;
+	}
+	
     public static Rotulo criarConfigNum(Painel linha, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Runnable menos, Runnable mais) {
         final Rotulo rotuloTitulo = new Rotulo(titulo, fonte, escala);
         rotuloTitulo.x = 15;
@@ -45,4 +57,55 @@ public class FabricaUtil {
         selecao.tornarAlternavel(estadoInicial);
         return selecao;
     }
+	
+	public static Botao criarBotao(String texto, float x, float y, float largura, float altura, Runnable acao) {
+		final Botao botao = new Botao(x, y, largura, altura, texto, fontePadrao, escalaPadrao, visualPadrao, acao);
+		return botao;
+	}
+	
+	public static Rotulo criarRotulo(String texto, float x, float y, float largura, float altura) {
+		final Rotulo rotulo = new Rotulo(texto, fontePadrao, escalaPadrao);
+		rotulo.x = x;
+		rotulo.y = y;
+		rotulo.largura = largura;
+		rotulo.altura = altura;
+		return rotulo;
+	}
+	
+	public static CampoTexto criarCampoTexto(String texto, float x, float y, float largura, float altura, Runnable acao) {
+		final CampoTexto campo = new CampoTexto(visualPadrao, fontePadrao, x, y, largura, altura, escalaPadrao);
+		campo.padrao = texto;
+		campo.aoConfirmar = acao;
+		return campo;
+	}
+	
+	public static CampoTexto criarCampoTexto(String texto, float x, float y, float largura, float altura) {
+		final CampoTexto campo = new CampoTexto(visualPadrao, fontePadrao, x, y, largura, altura, escalaPadrao);
+		campo.padrao = texto;
+		return campo;
+	}
+	
+	public static Painel criarPainel(float x, float y, float largura, float altura) {
+		final Painel campo = new Painel(visualPadrao, x, y, largura, altura, escalaPadrao);
+		return campo;
+	}
+	
+	public static CaixaDialogo criarDialogo(float x, float y, float largura, float altura) {
+		final CaixaDialogo dialogo = new CaixaDialogo(visualPadrao, fontePadrao, escalaPadrao);
+		dialogo.x = x;
+		dialogo.y = y;
+		dialogo.largura = largura;
+		dialogo.altura = altura;
+		return dialogo;
+	}
+	
+	public static CaixaDialogo criarDialogo(float x, float y, float largura, float altura, CaixaDialogo.Fechar fechar) {
+		final CaixaDialogo dialogo = new CaixaDialogo(visualPadrao, fontePadrao, escalaPadrao);
+		dialogo.x = x;
+		dialogo.y = y;
+		dialogo.largura = largura;
+		dialogo.altura = altura;
+		dialogo.aoFechar = fechar;
+		return dialogo;
+	}
 }

@@ -32,8 +32,28 @@
         }
     );
     ui.add(musica);
+
+    // criar diálogo com callback
+    CaixaDialogo dialogo = FabricaUtil.criarDialogo(100, 100, 400, 250,
+        new CaixaDialogo.Fechar() {
+            @Override public void confirmou(boolean acao) { if(acao) salvar(); }
+        }
+    );
+    ui.add(dialogo);
+    dialogo.mostrar("Atenção", "Deseja salvar?");
+    `,
+    camposEstaticos: `
+    public static PainelFatiado visualPadrao;
+    public static BitmapFont fontePadrao;
+    public static float escalaPadrao = 2.0f;
     `,
     metodos: [
+        {
+            nome: "defPadrao",
+            args: "PainelFatiado visual, BitmapFont fonte, float escala",
+            retorno: "void",
+            faz: "Define os recursos padrão usados pelos métodos de criação que não recebem visual/fonte/escala explicitamente."
+        },
         {
             nome: "criarConfigNum",
             args: "Painel linha, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Runnable menos, Runnable mais",
@@ -51,6 +71,48 @@
             args: "float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, Texture pixelBranco, boolean estadoInicial, Runnable acao",
             retorno: "Botao",
             faz: "Cria um Botao alternável já configurado com tornarAlternavel(estadoInicial). O estadoInicial define se começa ligado ou desligado."
+        },
+        {
+            nome: "criarBotao",
+            args: "String texto, float x, float y, float largura, float altura, Runnable acao",
+            retorno: "Botao",
+            faz: "Cria um Botao usando visualPadrao, fontePadrao e escalaPadrao."
+        },
+        {
+            nome: "criarRotulo",
+            args: "String texto, float x, float y, float largura, float altura",
+            retorno: "Rotulo",
+            faz: "Cria um Rotulo usando fontePadrao e escalaPadrao, já posicionado e dimensionado."
+        },
+        {
+            nome: "criarCampoTexto",
+            args: "String texto, float x, float y, float largura, float altura, Runnable acao",
+            retorno: "CampoTexto",
+            faz: "Cria um CampoTexto usando visualPadrao, fontePadrao e escalaPadrao, com texto padrão e ação ao confirmar."
+        },
+        {
+            nome: "criarCampoTexto",
+            args: "String texto, float x, float y, float largura, float altura",
+            retorno: "CampoTexto",
+            faz: "Sobrecarga sem ação ao confirmar."
+        },
+        {
+            nome: "criarPainel",
+            args: "float x, float y, float largura, float altura",
+            retorno: "Painel",
+            faz: "Cria um Painel usando visualPadrao e escalaPadrao."
+        },
+        {
+            nome: "criarDialogo",
+            args: "float x, float y, float largura, float altura",
+            retorno: "CaixaDialogo",
+            faz: "Cria uma CaixaDialogo usando visualPadrao, fontePadrao e escalaPadrao, posicionada e dimensionada."
+        },
+        {
+            nome: "criarDialogo",
+            args: "float x, float y, float largura, float altura, CaixaDialogo.Fechar fechar",
+            retorno: "CaixaDialogo",
+            faz: "Sobrecarga que também define aoFechar. O retorno recebe true se o usuário clicou OK, false se clicou X."
         }
     ]
 }

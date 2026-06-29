@@ -21,9 +21,16 @@ public class CampoTexto extends Componente {
     public int limiteCaracteres = 50;
     public GlyphLayout medidor;
     public float margemInterna = 10;
+	public Runnable aoConfirmar;
 
     // pra notificar o gerenciador quando ganhar foco
     public GerenciadorUI gerenciador = null;
+	
+	public CampoTexto(float x, float y, float largura, float altura) {
+        super(x, y, largura, altura);
+        this.medidor = new GlyphLayout();
+    }
+	
 
     public CampoTexto(PainelFatiado visual, BitmapFont fonte, float x, float y, float largura, float altura, float escala) {
         super(x, y, largura, altura);
@@ -72,6 +79,7 @@ public class CampoTexto extends Componente {
         }
         if(c == Input.Keys.ENTER) {
             emFoco = false;
+			if(aoConfirmar != null) aoConfirmar.run();
             Gdx.input.setOnscreenKeyboardVisible(false);
             return true;
         }

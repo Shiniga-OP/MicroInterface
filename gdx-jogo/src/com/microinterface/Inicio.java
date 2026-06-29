@@ -5,6 +5,6 @@ import com.badlogic.gdx.Game;
 public class Inicio extends Game {
 	@Override
 	public void create() {
-		setScreen(new TelaMenu());
+		setScreen(new TelaExemplo());
 	}
 }

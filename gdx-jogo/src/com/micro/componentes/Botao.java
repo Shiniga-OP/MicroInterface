@@ -25,7 +25,7 @@ public class Botao extends Componente {
     public Color corPressionado = new Color(0.4f, 0.5f, 0.6f, 1f);
     public Color corSelecionado = new Color(0.3f, 0.5f, 0.3f, 1f);
 
-    // construtor 1: para botões baseados em texturas fatiadas (ex: Janelas de Menu, UI do Jogo)
+    // construtor 1: para botões baseados em texturas fatiadas(ex: Janelas de Menu, UI do Jogo)
     public Botao(float x, float y, float largura, float altura, String texto, BitmapFont fonte, float escala, PainelFatiado visual, Runnable acao) {
         super(x, y, largura, altura);
         this.visualFatiado = visual;

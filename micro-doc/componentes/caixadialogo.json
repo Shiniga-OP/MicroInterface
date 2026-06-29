@@ -3,12 +3,12 @@
     nome: "CaixaDialogo",
     herda: "Componente",
     construtores: [
-        "PainelFatiado visual, BitmapFont fonte, float escala, ShapeRenderer pincelFormas"
+        "PainelFatiado visual, BitmapFont fonte, float escala"
     ],
     exemplo: `
-    CaixaDialogo dialogo = new CaixaDialogo(visual, fonte, 1.5f, pincelFormas);
-    dialogo.acaoOk = new Runnable() {
-        @Override public void run() { confirmar(); }
+    CaixaDialogo dialogo = new CaixaDialogo(visual, fonte, 1.5f);
+    dialogo.aoFechar = new CaixaDialogo.Fechar() {
+        @Override public void confirmou(boolean acao) { if(acao) confirmar(); }
     };
     ui.add(dialogo);
 
@@ -23,7 +23,6 @@
 
     public final PainelFatiado visual;
     public final BitmapFont fonte;
-    public final ShapeRenderer pincelFormas;
 
     public final Painel painelTitulo;
     public final Rotulo rotuloTitulo;
@@ -33,9 +32,15 @@
     public final List<Componente> componentes; // botões adicionados por mostrar()
 
     public GerenciadorUI gerenciador = null;
-    public Runnable acaoX = null; // chamada ao fechar com X
-    public Runnable acaoOk = null; // chamada ao confirmar com OK
+    public Fechar aoFechar = null; // chamada ao fechar (X) ou confirmar (OK); acao=false para X, true para OK
     `,
+    interfaces: [
+        {
+            nome: "Fechar",
+            metodo: "void confirmou(boolean acao)",
+            faz: "Retorno de resultado da caixa. acao=true quando o usuário clicou OK, false quando clicou X."
+        }
+    ],
     metodos: [
         {
             nome: "mostrar",

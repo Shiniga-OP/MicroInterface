@@ -24,11 +24,36 @@ public class Rotulo extends Componente {
 		quebrarTexto();
     }
 
+	public float calcAltura(float largDisponivel) {
+		fonte.getData().setScale(escala);
+		medidor.setText(fonte, "A");
+		final float altLinha = medidor.height;
+		fonte.getData().setScale(1.0f);
+
+		if(largDisponivel <= 0) return altLinha * espacoLinha;
+
+		final String[] palavras = texto.split(" ");
+		String linhaAtual = "";
+		int numLinhas = 1;
+
+		for(int i = 0; i < palavras.length; i++) {
+			final String teste = linhaAtual.isEmpty() ? palavras[i] : linhaAtual + " " + palavras[i];
+			medidor.setText(fonte, teste);
+			if(medidor.width <= largDisponivel - 20) {
+				linhaAtual = teste;
+			} else {
+				if(!linhaAtual.isEmpty()) numLinhas++;
+				linhaAtual = palavras[i];
+			}
+		}
+		return altLinha * espacoLinha * (numLinhas - 1) + altLinha;
+	}
+
 	public void defTexto(Object texto) {
 		this.texto = texto.toString();
 		quebrarTexto();
 	}
-	
+
 	public void defEscala(float escala) {
 		this.escala = escala;
 		quebrarTexto();
@@ -77,7 +102,7 @@ public class Rotulo extends Componente {
         // 1. reinicia a escala pra medir o tamanho "real/bruto" da fonte no arquivo
         fonte.getData().setScale(1.0f);
 
-        // mede a linha mais larga (largura do bloco)
+        // mede a linha mais larga(largura do bloco)
         float larguraBloco = 0;
         float alturaUmaLinha = 0;
         for(int i = 0; i < linhas.size; i++) {

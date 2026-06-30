@@ -8,6 +8,7 @@
 	public static final int OTIMI1 = 0x03;
 	public static final int BPeO = 0x04;
 	public static final int Facili = 0x05;
+	public static final int ORGANI = 0x06;
     `,
     metodos: [
         {

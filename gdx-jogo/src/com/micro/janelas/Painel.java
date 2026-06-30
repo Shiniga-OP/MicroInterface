@@ -204,4 +204,11 @@ public class Painel extends Componente {
             desenharFilhos(pincel, delta, desenharX, desenharY);
         }
     }
+	// retrocompatibilidade:
+	public void defEspaco(float horizontal, float vertical) {
+        this.espacoEsquerda = horizontal;
+        this.espacoDireita = horizontal;
+        this.espacoSuperior = vertical;
+        this.espacoInferior = vertical;
+    }
 }

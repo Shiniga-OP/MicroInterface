@@ -12,7 +12,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Gdx;
 
 public class GerenciadorUI implements InputProcessor {
-	// sistema de camadas , TreeMap ordena automaticamente por chave(numero da camada)
+	// sistema de camadas, TreeMap ordena automaticamente por chave(numero da camada)
 	public TreeMap<Integer, ArrayList<Componente>> camadas = new TreeMap<Integer, ArrayList<Componente>>();
 	public ArrayList<CaixaDialogo> dialogos = new ArrayList<CaixaDialogo>();
 	public CampoTexto campoEmFoco = null;
@@ -24,7 +24,7 @@ public class GerenciadorUI implements InputProcessor {
 	public static final int CAMADA_TOPO = 30;
 
 	public GerenciadorUI() {
-		// inicializa camadas padrão
+		// inicia camadas padrão
 		camadas.put(CAMADA_FUNDO, new ArrayList<Componente>());
 		camadas.put(CAMADA_PADRAO, new ArrayList<Componente>());
 		camadas.put(CAMADA_UI, new ArrayList<Componente>());
@@ -32,15 +32,15 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	// adiciona na camada padrão
-	public void add(Componente componente) {
-		if(componente instanceof CaixaDialogo) {
-			final CaixaDialogo dialogo = (CaixaDialogo)componente;
+	public void add(Componente c) {
+		if(c instanceof CaixaDialogo) {
+			final CaixaDialogo dialogo = (CaixaDialogo)c;
 			dialogos.add(dialogo);
 			dialogo.gerenciador = this;
 			registrarCamposTexto(dialogo);
 			return;
 		}
-		addCamada(componente, CAMADA_PADRAO);
+		addCamada(c, CAMADA_PADRAO);
 	}
 
 	// adiciona em camada especifica
@@ -54,31 +54,31 @@ public class GerenciadorUI implements InputProcessor {
 		registrarCamposTexto(componente);
 	}
 
-	public void rm(Componente componente) {
-		if(componente instanceof CaixaDialogo) {
-			final CaixaDialogo dialogo = (CaixaDialogo)componente;
+	public void rm(Componente c) {
+		if(c instanceof CaixaDialogo) {
+			final CaixaDialogo dialogo = (CaixaDialogo)c;
 			dialogos.remove(dialogo);
 			return;
 		}
 		// remove de todas as camadas
 		for(ArrayList<Componente> lista : camadas.values()) {
-			lista.remove(componente);
+			lista.remove(c);
 		}
 	}
 
 	// registra recursivamente o gerenciador em todos os CampoTexto
-	public void registrarCamposTexto(Componente componente) {
-		if(componente instanceof CampoTexto) {
-			((CampoTexto)componente).gerenciador = this;
+	public void registrarCamposTexto(Componente c) {
+		if(c instanceof CampoTexto) {
+			((CampoTexto)c).gerenciador = this;
 		}
 		// verifica se o componente tem filhos
-		if(componente instanceof Painel) {
-			final Painel painel = (Painel)componente;
+		if(c instanceof Painel) {
+			final Painel painel = (Painel)c;
 			for(Componente filho : painel.filhos) {
 				registrarCamposTexto(filho);
 			}
-		} else if(componente instanceof CaixaDialogo) {
-			final CaixaDialogo dialogo = (CaixaDialogo) componente;
+		} else if(c instanceof CaixaDialogo) {
+			final CaixaDialogo dialogo = (CaixaDialogo) c;
 			for(Componente filho : dialogo.componentes) {
 				registrarCamposTexto(filho);
 			}
@@ -162,17 +162,56 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	public boolean processarTecla(int tecla) {
+		final CaixaDialogo d = encontrarDialogoAtivo();
+		if(d != null) {
+			return d.processarTecla(tecla);
+		}
 		if(campoEmFoco != null) {
 			return campoEmFoco.processarTecla(tecla);
 		}
 		return false;
 	}
 
-	public boolean processarCaractere(char caractere) {
+	public boolean processarCaractere(char c) {
+		final CaixaDialogo d = encontrarDialogoAtivo();
+		if(d != null) {
+			return d.processarCaractere(c);
+		}
 		if(campoEmFoco != null) {
-			return campoEmFoco.processarCaractere(caractere);
+			return campoEmFoco.processarCaractere(c);
 		}
 		return false;
+	}
+
+	// procura uma CaixaDialogo ativa em qualquer lugar da arvore de componentes,
+	// independente de ter sido registrada via ui.add ou colocada dentro de um Painel comum
+	public CaixaDialogo encontrarDialogoAtivo() {
+		for(int i = dialogos.size() - 1; i >= 0; i--) {
+			final CaixaDialogo d = dialogos.get(i);
+			if(d.ativa) return d;
+		}
+		for(ArrayList<Componente> lista : camadas.values()) {
+			for(Componente c : lista) {
+				final CaixaDialogo encontrada = buscarDialogoEm(c);
+				if(encontrada != null) return encontrada;
+			}
+		}
+		return null;
+	}
+
+	public CaixaDialogo buscarDialogoEm(Componente c) {
+		if(c instanceof CaixaDialogo) {
+			final CaixaDialogo d = (CaixaDialogo) c;
+			return d.ativa ? d : null;
+		}
+		if(c instanceof Painel) {
+			final Painel painel = (Painel) c;
+			for(Componente filho : painel.filhos) {
+				final CaixaDialogo encontrada = buscarDialogoEm(filho);
+				if(encontrada != null) return encontrada;
+			}
+		}
+		return null;
 	}
 
 	public void desenhar(SpriteBatch pincel, float delta) {
@@ -209,7 +248,7 @@ public class GerenciadorUI implements InputProcessor {
 		if(componenteCapturado != null) componenteCapturado.liberar();
 		if(campoEmFoco != null) campoEmFoco.liberar();
 	}
-	
+
 	@Override
 	public boolean keyDown(int p) {
 		return processarTecla(p);

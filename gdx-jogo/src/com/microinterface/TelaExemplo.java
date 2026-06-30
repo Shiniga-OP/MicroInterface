@@ -13,6 +13,7 @@ import com.micro.componentes.CampoTexto;
 import com.badlogic.gdx.InputProcessor;
 import com.micro.util.FabricaUtil;
 import com.micro.componentes.Botao;
+import com.micro.componentes.CaixaDialogo;
 
 public class TelaExemplo implements Screen {
 	public SpriteBatch pincel;
@@ -32,7 +33,7 @@ public class TelaExemplo implements Screen {
 		
 		FabricaUtil.defPadrao(visual, fonte, 2.0f); // pra evitar reescrever muito codigo
 		
-		Painel painel = FabricaUtil.criarPainel(
+		final Painel painel = FabricaUtil.criarPainel(
 		350, 1000, // posicao
 		530, 530 // tamamho
 		);
@@ -58,10 +59,12 @@ public class TelaExemplo implements Screen {
 				@Override
 				public void run() {
 					// pra quando for clicado:
-					Gdx.input.setOnscreenKeyboardVisible(true); // levanta o teclado
+					CaixaDialogo dialogo = FabricaUtil.criarDialogo();
+					dialogo.add(FabricaUtil.criarCampoTexto("Digite aqui...", 0, 0, 350, 100));
+					dialogo.mostrar("Teste de dialogo", "teste");
+					painel.add(dialogo);
 				}
 			});
-			
 		painel.add(botao);
 		
 		ui.add(painel);

@@ -3,7 +3,6 @@ package com.micro.componentes;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import java.util.ArrayList;
 import java.util.List;
 import com.micro.janelas.PainelFatiado;
@@ -24,16 +23,18 @@ public class CaixaDialogo extends Componente {
     public final Painel painelBotoes;
     public final List<Componente> componentes = new ArrayList<Componente>();
 
-    public final Botao botaoFechar;
+    public Botao botaoFechar, botaoOk;
+    public GerenciadorUI gerenciador;
 
-    public GerenciadorUI gerenciador = null;
+    // a propria CaixaDialogo controla quem ta em foco, sem depender de GerenciadorUI
+    public CampoTexto campoEmFoco;
 
     public boolean arrastando = false;
     public float toqueInicialX;
     public float toqueInicialY;
 
     public Fechar aoFechar;
-	
+
 	public static interface Fechar {
 		public void confirmou(boolean acao);
 	}
@@ -43,7 +44,7 @@ public class CaixaDialogo extends Componente {
         this.visual = visual;
         this.fonte = fonte;
         this.escala = escala;
-        
+
         // painel para o titulo(transparente)
         this.painelTitulo = new Painel(0, altura - 50, largura, 50);
         this.rotuloTitulo = new Rotulo("Aviso", fonte, escala);
@@ -73,8 +74,7 @@ public class CaixaDialogo extends Componente {
             new Runnable() {
                 @Override
                 public void run() {
-                    ativa = false;
-                    if(aoFechar != null) aoFechar.confirmou(false);
+                    fechar(false);
                 }
             }
         );
@@ -87,37 +87,37 @@ public class CaixaDialogo extends Componente {
         this.rotulomsg.defTexto(msg);
         this.ativa = true;
 
-        // limpa os botões antigos e recria o botão de confirmação padrão
-        componentes.clear();
-        painelBotoes.filhos.clear();
+		if(botaoOk == null) {
+			final float largBt = 120;
+			final float altBt = 40;
 
-        final float largBt = 120;
-        final float altBt = 40;
-
-        final Botao btOk = new Botao(
-            (painelBotoes.largura - largBt) / 2, 
-            (painelBotoes.altura - altBt) / 2, 
-            largBt, 
-            altBt, 
-            "OK", 
-            fonte, 
-            escala, 
-            visual, 
-            new Runnable() {
-                @Override
-                public void run() {
-                    ativa = false;
-                    if(aoFechar != null) aoFechar.confirmou(true);
-                }
-            }
-        );
-        componentes.add(btOk);
-        painelBotoes.add(btOk);
-
-        if(gerenciador != null) {
-            for(Componente c : componentes) gerenciador.registrarCamposTexto(c);
-        }
+			botaoOk = new Botao(
+				(painelBotoes.largura - largBt) / 2, 
+				(painelBotoes.altura - altBt) / 2, 
+				largBt, 
+				altBt, 
+				"OK", 
+				fonte, 
+				escala, 
+				visual, 
+				new Runnable() {
+					@Override
+					public void run() {
+						fechar(true);
+					}
+				}
+			);
+			componentes.add(botaoOk);
+			painelBotoes.add(botaoOk);
+		}
     }
+
+	@Override
+	public void add(Componente c) {
+		super.add(c);
+		componentes.add(c);
+		painelBotoes.add(c);
+	}
 
     @Override
     public boolean aoTocar(float toqueX, float toqueY, boolean pressionado) {
@@ -127,6 +127,19 @@ public class CaixaDialogo extends Componente {
         final float relY = toqueY - y;
 
         if(botaoFechar.aoTocar(relX, relY, pressionado)) return true;
+
+        // antes de repassar o toque, descobre se algum CampoTexto vai ganhar foco com ele,
+        // assim a CaixaDialogo sempre sabe quem é o campo focado, sem precisar de GerenciadorUI
+        if(!pressionado) {
+            for(Componente comp : componentes) {
+                if(comp instanceof CampoTexto) {
+                    CampoTexto campo = (CampoTexto) comp;
+                    if(campo.contem(relX, relY)) {
+                        defFocoInterno(campo);
+                    }
+                }
+            }
+        }
         if(painelBotoes.aoTocar(relX, relY, pressionado)) return true;
         for(Componente comp : componentes) {
             if(comp.aoTocar(relX, relY, pressionado)) return true;
@@ -138,10 +151,36 @@ public class CaixaDialogo extends Componente {
                 toqueInicialY = toqueY - y;
                 return true;
             }
+            // tocou em qualquer outro lugar da caixa que não é um campo de texto: perde o foco
+            defFocoInterno(null);
         } else {
             arrastando = false;
         }
         return contem(toqueX, toqueY);
+    }
+
+    // troca o campo em foco internamente, sem depender de GerenciadorUI
+    public void defFocoInterno(CampoTexto novoFoco) {
+        if(campoEmFoco != null && campoEmFoco != novoFoco) {
+            campoEmFoco.defFoco(false);
+        }
+        campoEmFoco = novoFoco;
+        if(novoFoco != null) {
+            novoFoco.defFoco(true);
+        }
+    }
+
+    // chamado pelo GerenciadorUI(ou por qualquer InputProcessor) quando uma tecla é pressionada.l
+    // retorna true se o dialogo consumiu o evento
+    public boolean processarTecla(int tecla) {
+        if(!ativa || campoEmFoco == null) return false;
+        return campoEmFoco.processarTecla(tecla);
+    }
+
+    // chamado pelo GerenciadorUI quando um caractere é digitado
+    public boolean processarCaractere(char caractere) {
+        if(!ativa || campoEmFoco == null) return false;
+        return campoEmFoco.processarCaractere(caractere);
     }
 
     public void aoArrastar(float toqueX, float toqueY) {
@@ -164,5 +203,82 @@ public class CaixaDialogo extends Componente {
         botaoFechar.desenhar(pincel, delta, desenharX, desenharY);
         rotulomsg.desenhar(pincel, delta, desenharX, desenharY);
         painelBotoes.desenhar(pincel, delta, desenharX, desenharY);
+    }
+
+	// retrocompatibilidade:
+	// botão posicionado por ancora(uso geral)
+    public Botao addBotao(String texto, PainelFatiado visualBotao, Ancora ancoragem, float margemX, Runnable acao) {
+        final Botao botao = new Botao(texto, visualBotao, fonte, 0, 0, 120, 40, escala, acao);
+		componentes.add(botao);
+        painelBotoes.addAncorado(botao, ancoragem, margemX, 0);
+		return botao;
+    }
+
+    // botão posicionado manualmente dentro do painelBotoes(x/y explicitos)
+    public Botao addBotaoManual(String texto, PainelFatiado visualBotao, float x, float y, float larg, float alt, Runnable acao) {
+        final Botao botao = new Botao(texto, visualBotao, fonte, x, y, larg, alt, escala, acao);
+		componentes.add(botao);
+        painelBotoes.add(botao);
+		return botao;
+    }
+
+	public void addOk(PainelFatiado visualBotao) {
+        botaoOk = new Botao("OK", visualBotao, fonte, 0, 0, 120, 40, escala, new Runnable() {
+				public void run() {
+					fechar(true);
+				}
+			});
+		componentes.add(botaoOk);
+        painelBotoes.addAncorado(botaoOk, Ancora.CENTRO_DIREITO, -10, 0);
+    }
+
+    public void addCancelar(PainelFatiado visualBotao) {
+        final Botao botaoCancelar = new Botao("Cancelar", visualBotao, fonte, 0, 0, 120, 40, escala, new Runnable() {
+				public void run() {
+					fechar(false);
+				}
+			});
+		componentes.add(botaoCancelar);
+        painelBotoes.addAncorado(botaoCancelar, Ancora.CENTRO_ESQUERDO, 10, 0);
+    }
+
+	public void mostrar(String titulo, String msg, Fechar fechar) {
+		mostrar(titulo, msg);
+		this.aoFechar = fechar;
+	}
+
+	public void fechar(boolean confirmou) {
+        this.ativa = false;
+        campoEmFoco = null;
+        if(aoFechar != null) {
+            aoFechar.confirmou(confirmou);
+        }
+		// limpa os botões antigos e recria o botão de confirmação padrão
+        componentes.clear();
+        painelBotoes.filhos.clear();
+        botaoOk = null;
+    }
+
+	public void defTam(float larg, float alt) {
+        this.largura = larg;
+        this.altura = alt;
+
+        painelTitulo.largura = larg;
+        painelTitulo.y = alt + 10; // flutua 10px acima do painel
+
+        rotuloTitulo.largura = larg - 50;
+        rotuloTitulo.altura = 50;
+
+        botaoFechar.x = larg - 46;
+        botaoFechar.y = 4;
+
+        painelBotoes.largura = larg;
+
+        rotulomsg.largura = larg - 40;
+    }
+
+    public void centralizar(float larguraTela, float alturaTela) {
+        this.x = (larguraTela - this.largura) / 2;
+        this.y = (alturaTela - this.altura) / 2;
     }
 }

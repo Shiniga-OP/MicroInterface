@@ -7,9 +7,10 @@ public class Versao {
 	public static final int BPeO = 0x04;
 	public static final int Facili = 0x05;
 	public static final int ORGANI = 0x06;
+	public static final int RETRO = 0x07;
     
     public static int atual() {
-        return ORGANI;
+        return RETRO;
     }
 	
 	public static String formatar(int versao) {
@@ -20,6 +21,7 @@ public class Versao {
 			case BPeO: return "0.0.4";
 			case Facili: return "0.0.5";
 			case ORGANI: return "0.0.6";
+			case RETRO: return "0.0.7";
 			default: return "Desconhecida";
 		}
 	}

@@ -41,11 +41,27 @@ public class Botao extends Componente {
         this.acaoClique = acao;
         iniciarRotulo(texto, fonte, escala);
     }
+	
+	// construtor 3: retrocompativel
+	public Botao(String texto, PainelFatiado visual, BitmapFont fonte, float x, float y, float l, float a, float escala, Runnable acao) {
+        super(x, y, l, a);
+        this.visualFatiado = visual;
+        this.escalaFatiado = escala;
+        this.acaoClique = acao;
+
+        // o rotulo interno não precisa de coordenadas, ele se centraliza no botão
+        iniciarRotulo(texto, fonte, escala);
+    }
 
     public void iniciarRotulo(String texto, BitmapFont fonte, float escala) {
         this.rotulo = new Rotulo(texto, fonte, escala);
         this.rotulo.largura = this.largura;
         this.rotulo.altura = this.altura;
+    }
+
+    public float calcAltura(float largDisponivel) {
+        if(rotulo != null) return rotulo.calcAltura(largDisponivel);
+        return altura;
     }
 
     public void defTam(float largura, float altura) {
@@ -98,7 +114,7 @@ public class Botao extends Componente {
         final float desenharX = paiX + x;
         final float desenharY = paiY + y;
 
-        // 1. renderização do Fundo
+        // 1. renderização do fundo
         if(visualFatiado != null) {
             // se usa PainelFatiado, aplicamos um tom cinza quando pressionado para dar efeito de clique
             if(pressionado) {
@@ -109,17 +125,17 @@ public class Botao extends Componente {
             visualFatiado.desenhar(pincel, desenharX, desenharY, largura, altura, escalaFatiado);
             pincel.setColor(Color.WHITE); // restaura o padrão
         } else if(pixelBranco != null) {
-            // se usa Pixel Solido, calcula a cor baseada no estado atual
+            // se usa pixel solido, calcula a cor baseada no estado atual
             Color corAtual = selecionado ? corSelecionado : (pressionado ? corPressionado : corNormal);
             pincel.setColor(corAtual);
             pincel.draw(pixelBranco, desenharX, desenharY, largura, altura);
 
             // desenha bordas simples estilo gordo UI
             pincel.setColor(Color.LIGHT_GRAY);
-            pincel.draw(pixelBranco, desenharX, desenharY, largura, 1); // Inferior
-            pincel.draw(pixelBranco, desenharX, desenharY + altura - 1, largura, 1); // Superior
-            pincel.draw(pixelBranco, desenharX, desenharY, 1, altura); // Esquerda
-            pincel.draw(pixelBranco, desenharX + largura - 1, desenharY, 1, altura); // Direita
+            pincel.draw(pixelBranco, desenharX, desenharY, largura, 1); // inferior
+            pincel.draw(pixelBranco, desenharX, desenharY + altura - 1, largura, 1); // superior
+            pincel.draw(pixelBranco, desenharX, desenharY, 1, altura); // esquerda
+            pincel.draw(pixelBranco, desenharX + largura - 1, desenharY, 1, altura); // direita
         }
         // 2. se for um botão de seleção/alternavel, desenha o indicador geometrico
         if(alternavel && pixelBranco != null) {

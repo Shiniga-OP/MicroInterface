@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.micro.componentes.CampoTexto;
 import com.micro.componentes.CaixaDialogo;
+import com.micro.componentes.Componente;
+import com.micro.janelas.Lista;
 
 public class FabricaUtil {
 	public static PainelFatiado visualPadrao;
@@ -22,6 +24,38 @@ public class FabricaUtil {
 		escalaPadrao = escala;
 	}
 	
+	public static void add(Painel pai, Componente filho, Propriedade prop) {
+		final float largPai = pai.largura - pai.espacoEsquerda - pai.espacoDireita;
+		final float altPai = pai.altura - pai.espacoSuperior - pai.espacoInferior;
+
+		final float largFinal = prop.largura == Propriedade.PREENCHER_PAI ? largPai - prop.margemX * 2 : prop.largura;
+
+		float altFinal;
+		if(prop.altura == Propriedade.AJUSTAR_CONTEUDO) {
+			if(filho instanceof Rotulo) {
+				altFinal = ((Rotulo)filho).calcAltura(largFinal);
+			} else if(filho instanceof Botao) {
+				altFinal = ((Botao)filho).calcAltura(largFinal);
+			} else {
+				altFinal = filho.altura;
+			}
+		} else if(prop.altura == Propriedade.PREENCHER_PAI) {
+			altFinal = altPai - prop.margemY * 2;
+		} else {
+			altFinal = prop.altura;
+		}
+		if(filho instanceof Botao) {
+			((Botao)filho).defTam(largFinal, altFinal);
+		} else {
+			filho.largura = largFinal;
+			filho.altura = altFinal;
+		}
+		filho.x = prop.ancora.calcularX(largPai, largFinal, prop.margemX) + pai.espacoEsquerda;
+		filho.y = prop.ancora.calcularY(altPai, altFinal, prop.margemY) + pai.espacoInferior;
+
+		pai.add(filho);
+	}
+
     public static Rotulo criarConfigNum(Painel linha, float largura, float altura, String titulo, String valorInicial, BitmapFont fonte, float escala, PainelFatiado visualBotao, Runnable menos, Runnable mais) {
         final Rotulo rotuloTitulo = new Rotulo(titulo, fonte, escala);
         rotuloTitulo.x = 15;
@@ -57,12 +91,12 @@ public class FabricaUtil {
         selecao.tornarAlternavel(estadoInicial);
         return selecao;
     }
-	
+
 	public static Botao criarBotao(String texto, float x, float y, float largura, float altura, Runnable acao) {
 		final Botao botao = new Botao(x, y, largura, altura, texto, fontePadrao, escalaPadrao, visualPadrao, acao);
 		return botao;
 	}
-	
+
 	public static Rotulo criarRotulo(String texto, float x, float y, float largura, float altura) {
 		final Rotulo rotulo = new Rotulo(texto, fontePadrao, escalaPadrao);
 		rotulo.x = x;
@@ -71,25 +105,30 @@ public class FabricaUtil {
 		rotulo.altura = altura;
 		return rotulo;
 	}
-	
+
 	public static CampoTexto criarCampoTexto(String texto, float x, float y, float largura, float altura, Runnable acao) {
 		final CampoTexto campo = new CampoTexto(visualPadrao, fontePadrao, x, y, largura, altura, escalaPadrao);
 		campo.padrao = texto;
 		campo.aoConfirmar = acao;
 		return campo;
 	}
-	
+
 	public static CampoTexto criarCampoTexto(String texto, float x, float y, float largura, float altura) {
 		final CampoTexto campo = new CampoTexto(visualPadrao, fontePadrao, x, y, largura, altura, escalaPadrao);
 		campo.padrao = texto;
 		return campo;
 	}
-	
+
 	public static Painel criarPainel(float x, float y, float largura, float altura) {
 		final Painel campo = new Painel(visualPadrao, x, y, largura, altura, escalaPadrao);
 		return campo;
 	}
 	
+	public static CaixaDialogo criarDialogo() {
+		final CaixaDialogo dialogo = new CaixaDialogo(visualPadrao, fontePadrao, escalaPadrao);
+		return dialogo;
+	}
+
 	public static CaixaDialogo criarDialogo(float x, float y, float largura, float altura) {
 		final CaixaDialogo dialogo = new CaixaDialogo(visualPadrao, fontePadrao, escalaPadrao);
 		dialogo.x = x;
@@ -98,7 +137,7 @@ public class FabricaUtil {
 		dialogo.altura = altura;
 		return dialogo;
 	}
-	
+
 	public static CaixaDialogo criarDialogo(float x, float y, float largura, float altura, CaixaDialogo.Fechar fechar) {
 		final CaixaDialogo dialogo = new CaixaDialogo(visualPadrao, fontePadrao, escalaPadrao);
 		dialogo.x = x;
@@ -107,5 +146,10 @@ public class FabricaUtil {
 		dialogo.altura = altura;
 		dialogo.aoFechar = fechar;
 		return dialogo;
+	}
+	
+	public static Lista criarLista(Texture pixelBranco, float x, float y, float largura, float altura) {
+		final Lista lista = new Lista(visualPadrao, x, y, largura, altura, escalaPadrao, pixelBranco);
+		return lista;
 	}
 }

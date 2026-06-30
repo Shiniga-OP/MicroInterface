@@ -1,4 +1,4 @@
-package com.micro.componentes;
+package com.microantiga.componentes;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.micro.util.GerenciadorUI;
-import com.micro.janelas.PainelFatiado;
+import com.microantiga.util.GerenciadorUI;
+import com.microantiga.janelas.PainelFatiado;
 
 public class CampoTexto extends Componente {
     public PainelFatiado visual;
@@ -21,21 +21,16 @@ public class CampoTexto extends Componente {
     public int limiteCaracteres = 50;
     public GlyphLayout medidor;
     public float margemInterna = 10;
-	public Runnable aoConfirmar;
 
     // pra notificar o gerenciador quando ganhar foco
     public GerenciadorUI gerenciador = null;
-	
-	public static interface Texto {
+
+    public interface Texto {
         void aoMudar(String novoTexto);
     }
+
     public Texto mudanca;
-	
-	public CampoTexto(float x, float y, float largura, float altura) {
-        super(x, y, largura, altura);
-        this.medidor = new GlyphLayout();
-    }
-	
+
     public CampoTexto(PainelFatiado visual, BitmapFont fonte, float x, float y, float largura, float altura, float escala) {
         super(x, y, largura, altura);
         this.visual = visual;
@@ -78,7 +73,7 @@ public class CampoTexto extends Componente {
         if(!emFoco) return false;
 
         if(c == Input.Keys.BACKSPACE && texto.length() > 0) {
-			String antigoTexto = texto;
+            String antigoTexto = texto;
             texto = texto.substring(0, texto.length() - 1);
             if(mudanca != null && !antigoTexto.equals(texto)) {
                 mudanca.aoMudar(texto);
@@ -87,7 +82,6 @@ public class CampoTexto extends Componente {
         }
         if(c == Input.Keys.ENTER) {
             emFoco = false;
-			if(aoConfirmar != null) aoConfirmar.run();
             Gdx.input.setOnscreenKeyboardVisible(false);
             return true;
         }
@@ -98,7 +92,11 @@ public class CampoTexto extends Componente {
         if(!emFoco) return false;
 
         if(caractere >= 32 && caractere <= 126 && texto.length() < limiteCaracteres) {
+            String antigoTexto = texto;
             texto += caractere;
+            if(mudanca != null && !antigoTexto.equals(texto)) {
+                mudanca.aoMudar(texto);
+            }
             return true;
         }
         return false;

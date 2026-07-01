@@ -14,12 +14,14 @@ import com.badlogic.gdx.InputProcessor;
 import com.micro.util.FabricaUtil;
 import com.micro.componentes.Botao;
 import com.micro.componentes.CaixaDialogo;
+import com.micro.janelas.Lista;
+import com.badlogic.gdx.graphics.Color;
 
 public class TelaExemplo implements Screen {
 	public SpriteBatch pincel;
 	public BitmapFont fonte;
 	public GerenciadorUI ui;
-	public Texture texturaUi;
+	public Texture texturaUi, pixel;
 	
 	@Override
 	public void show() {
@@ -28,6 +30,7 @@ public class TelaExemplo implements Screen {
         fonte = new BitmapFont(); // pra textos
 		ui = new GerenciadorUI(); // e pra gerenciar
         texturaUi = new Texture(Gdx.files.internal("texturas/ui.png")); // textura geral
+		pixel = FabricaUtil.criarPixel(Color.WHITE);
 		
 		PainelFatiado visual = new PainelFatiado(texturaUi); // vai dar o padrão visual pro codigo
 		
@@ -67,6 +70,19 @@ public class TelaExemplo implements Screen {
 			});
 		painel.add(botao);
 		
+		Lista lista = FabricaUtil.criarLista(pixel, 10, 100, 200, 500);
+		
+		for(int i = 0; i < 10; i++) {
+			Painel p = FabricaUtil.criarPainel(0, 0, 10, 10);
+			p.add(FabricaUtil.criarBotao("Aqui", 0, 0, 150, 50, new Runnable() {
+				@Override
+				public void run() {
+					Inicio.tela.setScreen(new TelaMenu());
+				}
+			}));
+			lista.add(p);
+		}
+		painel.add(lista);
 		ui.add(painel);
 		// pra os digitos funcionarem:
 		Gdx.input.setInputProcessor(ui);
@@ -83,6 +99,7 @@ public class TelaExemplo implements Screen {
 	public void dispose() {
 		fonte.dispose();
 		texturaUi.dispose();
+		pixel.dispose();
 	}
 	
 	@Override

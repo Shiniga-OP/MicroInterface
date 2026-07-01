@@ -3,11 +3,14 @@ package com.micro.janelas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector3;
 import com.micro.componentes.Componente;
 import com.micro.util.Ancora;
+import com.micro.util.GerenciadorUI;
 
 public class Painel extends Componente {
     // propriedades visuais
@@ -167,16 +170,28 @@ public class Painel extends Componente {
         // 2. renderiza filhos(com ou sem recorte de rolagem)
         if(precisaRolagem()) {
             pincel.flush();
-            // seu calculo matematico customizado nativo do glScissor:
-            final float sX = desenharX;
-            final float sY = desenharY;
-            final float sLargura = largura;
-            final float sAltura = altura;
+            // desenharX/Y estao em coordenadas de mundo(a camera pode estar centralizada em 0,0)
+            // glScissor exige pixels de tela com origem no canto inferior esquerdo, entao projeta
+            final OrthographicCamera camera = GerenciadorUI.camera;
+            if(camera != null) {
+                final Vector3 pontoAuxiliar = GerenciadorUI.pontoAuxiliar;
+                pontoAuxiliar.set(desenharX, desenharY, 0);
+                camera.project(pontoAuxiliar);
+                final float sX = pontoAuxiliar.x;
+                final float sY = pontoAuxiliar.y;
 
-            // transforma coordenadas para a tela
-            Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-            Gdx.gl.glScissor((int)sX, (int)sY, (int)sLargura, (int)sAltura);
+                pontoAuxiliar.set(desenharX + largura, desenharY + altura, 0);
+                camera.project(pontoAuxiliar);
+                final float sLargura = pontoAuxiliar.x - sX;
+                final float sAltura = pontoAuxiliar.y - sY;
 
+                Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+                Gdx.gl.glScissor((int)sX, (int)sY, (int)sLargura, (int)sAltura);
+            } else {
+                // sem camera definida, cai no comportamento antigo(so funciona se a origem for 0,0 no canto)
+                Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+                Gdx.gl.glScissor((int)desenharX, (int)desenharY, (int)largura, (int)altura);
+            }
             for(Componente filho : filhos) {
                 filho.desenhar(pincel, delta, desenharX, desenharY - deslocamentoY);
             }

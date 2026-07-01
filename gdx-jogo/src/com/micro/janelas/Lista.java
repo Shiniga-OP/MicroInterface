@@ -20,18 +20,18 @@ public class Lista extends Painel {
         super(x, y, largura, altura);
         tornarRolavel(pixelBranco);
     }
+    
+    @Override
+    public void add(Componente c) {
+        addItem(c);
+    }
 
     public void addItem(Componente item) {
         final float novaAltura = alturaVariavel ? item.altura : alturaItem;
 		final float novaLargura = largura - larguraBarra - margemBarra;
-        if(!alturaVariavel) {
-            if(item instanceof Botao) {
-                ((Botao)item).defTam(novaLargura, novaAltura);
-            } else {
-                item.largura = novaLargura;
-                item.altura = novaAltura;
-            }
-        }
+		
+        if(!alturaVariavel) item.defTam(novaLargura, novaAltura);
+        
         item.x = 0;
         // cada item novo vai abaixo dos anteriores: y decresce
         // recalcula todos os y para manter ordem topo->base

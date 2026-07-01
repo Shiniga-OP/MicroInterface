@@ -10,21 +10,40 @@ import com.micro.componentes.CampoTexto;
 import com.micro.janelas.Painel;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class GerenciadorUI implements InputProcessor {
 	// sistema de camadas, TreeMap ordena automaticamente por chave(numero da camada)
 	public TreeMap<Integer, ArrayList<Componente>> camadas = new TreeMap<Integer, ArrayList<Componente>>();
 	public ArrayList<CaixaDialogo> dialogos = new ArrayList<CaixaDialogo>();
-	public CampoTexto campoEmFoco = null;
-	public Componente componenteCapturado = null;
+	public static CampoTexto campoEmFoco;
+	// camera da tela ativa, usada pelo Painel pra projetar coordenadas de mundo pra pixels de tela no glScissor
+	public static OrthographicCamera camera;
+	public static final Vector3 pontoAuxiliar = new Vector3();
+	public static Viewport vista;
+	public boolean usarCamera = true;
+	public Componente componenteCapturado;
 	// camadas padrão
 	public static final int CAMADA_FUNDO = 0;
 	public static final int CAMADA_PADRAO = 10;
 	public static final int CAMADA_UI = 20;
 	public static final int CAMADA_TOPO = 30;
-
+	
 	public GerenciadorUI() {
-		// inicia camadas padrão
+		this(true);
+	}
+
+	public GerenciadorUI(boolean usarCamera) {
+		// tela:
+		this.usarCamera = usarCamera;
+		camera = new OrthographicCamera();
+		vista = new ScreenViewport(camera);
+        vista.apply(true);
+		// inicia camadas padrão:
+		componenteCapturado = null;
 		camadas.put(CAMADA_FUNDO, new ArrayList<Componente>());
 		camadas.put(CAMADA_PADRAO, new ArrayList<Componente>());
 		camadas.put(CAMADA_UI, new ArrayList<Componente>());
@@ -36,8 +55,6 @@ public class GerenciadorUI implements InputProcessor {
 		if(c instanceof CaixaDialogo) {
 			final CaixaDialogo dialogo = (CaixaDialogo)c;
 			dialogos.add(dialogo);
-			dialogo.gerenciador = this;
-			registrarCamposTexto(dialogo);
 			return;
 		}
 		addCamada(c, CAMADA_PADRAO);
@@ -50,8 +67,6 @@ public class GerenciadorUI implements InputProcessor {
 			camadas.put(numeroCamada, new ArrayList<Componente>());
 		}
 		camadas.get(numeroCamada).add(componente);
-		// registra o gerenciador em campos de texto
-		registrarCamposTexto(componente);
 	}
 
 	public void rm(Componente c) {
@@ -66,25 +81,6 @@ public class GerenciadorUI implements InputProcessor {
 		}
 	}
 
-	// registra recursivamente o gerenciador em todos os CampoTexto
-	public void registrarCamposTexto(Componente c) {
-		if(c instanceof CampoTexto) {
-			((CampoTexto)c).gerenciador = this;
-		}
-		// verifica se o componente tem filhos
-		if(c instanceof Painel) {
-			final Painel painel = (Painel)c;
-			for(Componente filho : painel.filhos) {
-				registrarCamposTexto(filho);
-			}
-		} else if(c instanceof CaixaDialogo) {
-			final CaixaDialogo dialogo = (CaixaDialogo) c;
-			for(Componente filho : dialogo.componentes) {
-				registrarCamposTexto(filho);
-			}
-		}
-	}
-
 	public void limpar() {
 		for(ArrayList<Componente> lista : camadas.values()) {
 			lista.clear();
@@ -92,13 +88,6 @@ public class GerenciadorUI implements InputProcessor {
 		dialogos.clear();
 		campoEmFoco = null;
 		componenteCapturado = null;
-	}
-
-	public void defFocoTexto(CampoTexto campo) {
-		if(campoEmFoco != null && campoEmFoco != campo) {
-			campoEmFoco.defFoco(false);
-		}
-		campoEmFoco = campo;
 	}
 
 	public boolean processarToque(float x, float y, boolean pressionado) {
@@ -153,7 +142,7 @@ public class GerenciadorUI implements InputProcessor {
 			float localX = x;
 			float localY = y;
 			if(componenteCapturado instanceof Painel) {
-				Painel p = (Painel)componenteCapturado;
+				final Painel p = (Painel)componenteCapturado;
 				localX = x - p.ultimoPaiX;
 				localY = y - p.ultimoPaiY;
 			}
@@ -162,10 +151,6 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	public boolean processarTecla(int tecla) {
-		final CaixaDialogo d = encontrarDialogoAtivo();
-		if(d != null) {
-			return d.processarTecla(tecla);
-		}
 		if(campoEmFoco != null) {
 			return campoEmFoco.processarTecla(tecla);
 		}
@@ -173,30 +158,10 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	public boolean processarCaractere(char c) {
-		final CaixaDialogo d = encontrarDialogoAtivo();
-		if(d != null) {
-			return d.processarCaractere(c);
-		}
 		if(campoEmFoco != null) {
 			return campoEmFoco.processarCaractere(c);
 		}
 		return false;
-	}
-
-	// procura uma CaixaDialogo ativa em qualquer lugar da arvore de componentes,
-	// independente de ter sido registrada via ui.add ou colocada dentro de um Painel comum
-	public CaixaDialogo encontrarDialogoAtivo() {
-		for(int i = dialogos.size() - 1; i >= 0; i--) {
-			final CaixaDialogo d = dialogos.get(i);
-			if(d.ativa) return d;
-		}
-		for(ArrayList<Componente> lista : camadas.values()) {
-			for(Componente c : lista) {
-				final CaixaDialogo encontrada = buscarDialogoEm(c);
-				if(encontrada != null) return encontrada;
-			}
-		}
-		return null;
 	}
 
 	public CaixaDialogo buscarDialogoEm(Componente c) {
@@ -215,6 +180,10 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	public void desenhar(SpriteBatch pincel, float delta) {
+		if(usarCamera) {
+			camera.update();
+			pincel.setProjectionMatrix(camera.combined);
+		}
 		// desenha camadas em ordem crescente(de baixo para cima)
 		for(Integer numCamada : camadas.keySet()) {
 			final ArrayList<Componente> componentesDaCamada = camadas.get(numCamada);
@@ -248,6 +217,10 @@ public class GerenciadorUI implements InputProcessor {
 		if(componenteCapturado != null) componenteCapturado.liberar();
 		if(campoEmFoco != null) campoEmFoco.liberar();
 	}
+	
+	public void ajustar(int v, int h) {
+		vista.update(v, h);
+	}
 
 	@Override
 	public boolean keyDown(int p) {
@@ -260,21 +233,21 @@ public class GerenciadorUI implements InputProcessor {
 	}
 
 	@Override
-	public boolean touchDown(int telaX, int telaY, int p, int b) {
-		final float uiY = Gdx.graphics.getHeight() - telaY;
-		return processarToque(telaX, uiY, true);
+	public boolean touchDown(int x, int y, int p, int b) {
+		camera.unproject(pontoAuxiliar.set(x, y, 0));
+		return processarToque(pontoAuxiliar.x, pontoAuxiliar.y, true);
 	}
 
 	@Override
-	public boolean touchUp(int telaX, int telaY, int p, int b) {
-		final float uiY = Gdx.graphics.getHeight() - telaY;
-		return processarToque(telaX, uiY, false);
+	public boolean touchUp(int x, int y, int p, int b) {
+		camera.unproject(pontoAuxiliar.set(x, y, 0));
+		return processarToque(pontoAuxiliar.x, pontoAuxiliar.y, false);
 	}
 
 	@Override
-	public boolean touchDragged(int telaX, int telaY, int p) {
-		final float uiY = Gdx.graphics.getHeight() - telaY;
-		processarArraste(telaX, uiY);
+	public boolean touchDragged(int x, int y, int p) {
+		camera.unproject(pontoAuxiliar.set(x, y, 0));
+		processarArraste(pontoAuxiliar.x, pontoAuxiliar.y);
 		return false;
 	}
 	@Override public boolean keyUp(int p) { return false; }

@@ -76,6 +76,26 @@ public class FabricaUtil {
         linha.add(btMais);
 		return rotuloValor;
     }
+	
+	public static Rotulo criarConfigNum(Painel painel,
+        float x, float y, float largura, float altura,
+        String titulo, String valorInicial,
+        BitmapFont fonte, float escala,
+        Texture pixelBranco, PainelFatiado visual,
+        Runnable acaoMenos, Runnable acaoMais
+    ) {
+		return criarConfigNum(painel, largura, altura, titulo, valorInicial, fonte, escala, visual, acaoMenos, acaoMais);
+	}
+	
+	public static Botao criarSelecao(
+        float x, float y, float largura, float altura,
+        String texto, boolean estadoInicial,
+        BitmapFont fonte, float escala,
+        Texture pixelBranco, PainelFatiado visual,
+        Runnable acaoAlternar
+    ) {
+		return criarSelecao(x, y, largura, altura, texto, fonte, escala, pixelBranco, estadoInicial, acaoAlternar);
+	}
 
     public static Texture criarPixel(Color cor) {
         final Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);

@@ -32,6 +32,11 @@ public abstract class Componente {
     public boolean capturaArraste() {
         return false;
     }
+	
+	public void defTam(float largura, float altura) {
+		this.largura = largura;
+		this.altura = altura;
+	}
 
     public abstract void desenhar(SpriteBatch pincel, float delta, float paiX, float paiY);
 

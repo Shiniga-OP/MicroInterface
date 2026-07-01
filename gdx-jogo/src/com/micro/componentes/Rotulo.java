@@ -58,6 +58,12 @@ public class Rotulo extends Componente {
 		this.escala = escala;
 		quebrarTexto();
 	}
+	
+	@Override
+	public void defTam(float largura, float altura) {
+		super.defTam(largura, altura);
+		quebrarTexto();
+	}
 
     public void quebrarTexto() {
         linhas.clear();

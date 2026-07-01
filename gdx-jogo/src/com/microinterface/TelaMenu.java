@@ -65,7 +65,7 @@ public class TelaMenu implements Screen {
 
         final float larg = largPainel - 50 * 2;
 
-        Rotulo titulo = FabricaUtil.criarRotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), 0, 0, 200, 50);
+        Rotulo titulo = FabricaUtil.criarRotulo("TESTES DA MICRO-"+Versao.formatar(Versao.atual()), 0, 0, 300, 100);
         
         CampoTexto campo = FabricaUtil.criarCampoTexto("Digite seu nome aqui...", 0, 0, larg, 40);
 		
@@ -126,8 +126,16 @@ public class TelaMenu implements Screen {
                 }
             }
         );
+		
+		Botao btExemplo = FabricaUtil.criarBotao("Abrir Exemplo", 0, 0, 0, 45, new Runnable() {
+			@Override
+			public void run() {
+				Inicio.tela.setScreen(new TelaExemplo());
+			}
+		});
         MontadorPainel montador = new MontadorPainel(painelPrincipal, 50, 10);
         montador.addFixo(titulo)
+		    .add(btExemplo)
             .add(campo)
             .add(painelVolume)
             .add(caixaSelecaoMusica)
@@ -155,7 +163,7 @@ public class TelaMenu implements Screen {
         String[] opcoes = { "Novo Jogo", "Continuar", "Opcoes", "Creditos", "Sair" };
         for(int i = 0; i < opcoes.length; i++) {
             final String nome = opcoes[i];
-            lista.addItem(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
+            lista.add(new Botao(0, 0, 0, 0, nome, fonte, 2.0f, pixelBranco,
 							  new Runnable() {
 								  @Override public void run() { Gdx.app.log("Lista", "Clicou: " + nome); }
 							  }

@@ -64,14 +64,11 @@ public class Botao extends Componente {
         return altura;
     }
 
+	@Override
     public void defTam(float largura, float altura) {
-        this.largura = largura;
-        this.altura = altura;
-        if(rotulo != null) {
-            rotulo.largura = largura;
-            rotulo.altura = altura;
-            rotulo.quebrarTexto();
-        }
+        super.defTam(largura, altura);
+		
+        if(rotulo != null) rotulo.defTam(largura, altura);
     }
 
     // transforma este botão em um seleção/radio

@@ -24,11 +24,7 @@ public class CaixaDialogo extends Componente {
     public final List<Componente> componentes = new ArrayList<Componente>();
 
     public Botao botaoFechar, botaoOk;
-    public GerenciadorUI gerenciador;
-
-    // a propria CaixaDialogo controla quem ta em foco, sem depender de GerenciadorUI
-    public CampoTexto campoEmFoco;
-
+    
     public boolean arrastando = false;
     public float toqueInicialX;
     public float toqueInicialY;
@@ -160,27 +156,11 @@ public class CaixaDialogo extends Componente {
     }
 
     // troca o campo em foco internamente, sem depender de GerenciadorUI
-    public void defFocoInterno(CampoTexto novoFoco) {
-        if(campoEmFoco != null && campoEmFoco != novoFoco) {
-            campoEmFoco.defFoco(false);
+    public void defFocoInterno(CampoTexto foco) {
+		GerenciadorUI.campoEmFoco = foco;
+        if(foco != null) {
+            foco.defFoco(true);
         }
-        campoEmFoco = novoFoco;
-        if(novoFoco != null) {
-            novoFoco.defFoco(true);
-        }
-    }
-
-    // chamado pelo GerenciadorUI(ou por qualquer InputProcessor) quando uma tecla é pressionada.l
-    // retorna true se o dialogo consumiu o evento
-    public boolean processarTecla(int tecla) {
-        if(!ativa || campoEmFoco == null) return false;
-        return campoEmFoco.processarTecla(tecla);
-    }
-
-    // chamado pelo GerenciadorUI quando um caractere é digitado
-    public boolean processarCaractere(char caractere) {
-        if(!ativa || campoEmFoco == null) return false;
-        return campoEmFoco.processarCaractere(caractere);
     }
 
     public void aoArrastar(float toqueX, float toqueY) {
@@ -249,13 +229,9 @@ public class CaixaDialogo extends Componente {
 
 	public void fechar(boolean confirmou) {
         this.ativa = false;
-        campoEmFoco = null;
         if(aoFechar != null) {
             aoFechar.confirmou(confirmou);
         }
-		// limpa os botões antigos e recria o botão de confirmação padrão
-        componentes.clear();
-        painelBotoes.filhos.clear();
         botaoOk = null;
     }
 
@@ -281,4 +257,13 @@ public class CaixaDialogo extends Componente {
         this.x = (larguraTela - this.largura) / 2;
         this.y = (alturaTela - this.altura) / 2;
     }
+	
+	@Override
+	public void liberar() {
+		super.liberar();
+		if(painelBotoes != null) painelBotoes.liberar();
+		if(painelTitulo != null) painelTitulo.liberar();
+		if(botaoOk != null) botaoOk.liberar();
+		if(botaoFechar != null) botaoFechar.liberar();
+	}
 }

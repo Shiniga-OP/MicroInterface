@@ -22,9 +22,6 @@ public class CampoTexto extends Componente {
     public GlyphLayout medidor;
     public float margemInterna = 10;
 	public Runnable aoConfirmar;
-
-    // pra notificar o gerenciador quando ganhar foco
-    public GerenciadorUI gerenciador = null;
 	
 	public static interface Texto {
         void aoMudar(String novoTexto);
@@ -55,9 +52,8 @@ public class CampoTexto extends Componente {
         this.emFoco = foco;
         if(foco) {
             // notifica o gerenciador que esse campo ta em foco
-            if(gerenciador != null) {
-                gerenciador.defFocoTexto(this);
-            }
+            GerenciadorUI.campoEmFoco = this;
+			
             // força o teclado a aparecer
             Gdx.input.setOnscreenKeyboardVisible(true);
         } else {
@@ -67,10 +63,10 @@ public class CampoTexto extends Componente {
 
     public boolean aoTocar(float toqueX, float toqueY, boolean pressionado) {
         if(contem(toqueX, toqueY) && !pressionado) {
-            emFoco = true;
             defFoco(true);
             return true;
         }
+		defFoco(false);
         return false;
     }
 
@@ -86,9 +82,8 @@ public class CampoTexto extends Componente {
             return true;
         }
         if(c == Input.Keys.ENTER) {
-            emFoco = false;
+            defFoco(false);
 			if(aoConfirmar != null) aoConfirmar.run();
-            Gdx.input.setOnscreenKeyboardVisible(false);
             return true;
         }
         return false;
